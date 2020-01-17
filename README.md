@@ -1,2 +1,10 @@
-# css432_20w_0x878470-src
-CSS432 - Network Design final project
+# CSS432_20W_0x878470 Final Project
+## University of Washington Bothell - CSS 432 Final Project
+Anya Biryukova, Jenna Martin, and Brian Tang
+___
+## Repository Description
+This repository is for the development of the CSS432 Disassembler final project. It contains the documentation and source code required to build and run the disassembler. CSS432 is an undergraduate network design course that covers the essentials of network interface and the development of web applications.
+___
+## Documentation
+Documentation: https://drive.google.com/drive/u/0/folders/0ACw6HL1Aj9eKUk9PVA
+
