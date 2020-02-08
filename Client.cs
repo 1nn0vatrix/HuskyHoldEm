@@ -4,46 +4,47 @@ using System.Net;
 using System.Text;
 using System.Net.Sockets;
 
-
-public class client
+/**
+ * Client Endpoint
+ */
+public class Client
 {
-
     public static void Main()
     {
+        const int PORT = 8070;
+        const int MAX_BUFFER_LENGTH = 100;
 
         try
         {
-            TcpClient tcpclient = new TcpClient();
             Console.WriteLine("Connecting.....");
-
-            tcpclient.Connect("127.0.0.1", 8070);
-            // use the ipaddress as in the server program
+            
+            TcpClient tcpclient = new TcpClient();
+            tcpclient.Connect("127.0.0.1", PORT);
 
             Console.WriteLine("Connected");
-            Console.Write("Enter the string to be transmitted : ");
+            Console.Write("Enter the string to be transmitted: ");
 
-            String str = Console.ReadLine();
-            Stream stm = tcpclient.GetStream();
-
-            ASCIIEncoding asen = new ASCIIEncoding();
-            byte[] sendStream = asen.GetBytes(str);
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+            byte[] writeBuffer = asciiEncoding.GetBytes(Console.ReadLine());
+            
             Console.WriteLine("Transmitting.....");
 
-            stm.Write(sendStream, 0, sendStream.Length);
+            Stream stream = tcpclient.GetStream();
+            stream.Write(writeBuffer, 0, writeBuffer.Length);
 
-            byte[] byteBuffer = new byte[100];
-            int k = stm.Read(byteBuffer, 0, 100);
+            byte[] readBuffer = new byte[MAX_BUFFER_LENGTH];
+            int bytesRead = stream.Read(readBuffer, 0, MAX_BUFFER_LENGTH);
 
-            for (int i = 0; i < k; i++)
-                Console.Write(Convert.ToChar(byteBuffer[i]));
+            for (int i = 0; i < bytesRead; i++)
+            {
+                Console.Write(Convert.ToChar(readBuffer[i]));
+            }
 
             tcpclient.Close();
         }
-
         catch (Exception e)
         {
-            Console.WriteLine("Error..... " + e.StackTrace);
+            Console.WriteLine($"Error: {e.StackTrace}");
         }
     }
-
 }
