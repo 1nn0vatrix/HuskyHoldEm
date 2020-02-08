@@ -11,9 +11,9 @@ public struct ThreadData
 {
     public Socket socket;
     public Thread thread;
-    public String username;
+    public string username;
     
-    public threadData(Socket socket, Thread thread, String username)
+    public ThreadData(Socket socket, Thread thread, string username)
     {
         this.socket = socket;
         this.thread = thread;
