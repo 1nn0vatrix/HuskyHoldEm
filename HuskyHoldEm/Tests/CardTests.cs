@@ -51,20 +51,119 @@ namespace HuskyHoldEm.Tests
 
 		void RankingTests()
 		{
-			List<Card> royalFlush = new List<Card> { new Card(Rank.Ace, Suit.Club), new Card(Rank.King, Suit.Club), new Card(Rank.Queen, Suit.Club), new Card(Rank.Jack, Suit.Club), new Card(Rank.Ten, Suit.Club) };
-			List<Card> straightFlush = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.King, Suit.Club), new Card(Rank.Queen, Suit.Club), new Card(Rank.Jack, Suit.Club), new Card(Rank.Ten, Suit.Club) };
-			List<Card> straightFlush2 = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Eight, Suit.Club), new Card(Rank.Queen, Suit.Club), new Card(Rank.Jack, Suit.Club), new Card(Rank.Ten, Suit.Club) };
-			List<Card> fourOfAKind = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Nine, Suit.Heart), new Card(Rank.Nine, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> fourOfAKind2 = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Nine, Suit.Heart), new Card(Rank.Nine, Suit.Diamond), new Card(Rank.Eight, Suit.Club) };
-			List<Card> fourOfAKind3 = new List<Card> { new Card(Rank.Seven, Suit.Club), new Card(Rank.Seven, Suit.Spade), new Card(Rank.Seven, Suit.Heart), new Card(Rank.Seven, Suit.Diamond), new Card(Rank.Eight, Suit.Club) };
-			List<Card> fullHouse = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Nine, Suit.Heart), new Card(Rank.Ten, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> fullHouse2 = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Nine, Suit.Heart), new Card(Rank.Ten, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> flush = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.King, Suit.Club), new Card(Rank.Four, Suit.Club), new Card(Rank.Six, Suit.Club), new Card(Rank.Ten, Suit.Club) };
-			List<Card> straight = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.King, Suit.Diamond), new Card(Rank.Queen, Suit.Spade), new Card(Rank.Jack, Suit.Heart), new Card(Rank.Ten, Suit.Club) };
-			List<Card> threeOfAKind = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Nine, Suit.Heart), new Card(Rank.Two, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> twoPair = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Four, Suit.Heart), new Card(Rank.Four, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> pair = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Nine, Suit.Spade), new Card(Rank.Four, Suit.Heart), new Card(Rank.Three, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
-			List<Card> highCard = new List<Card> { new Card(Rank.Nine, Suit.Club), new Card(Rank.Two, Suit.Spade), new Card(Rank.Four, Suit.Heart), new Card(Rank.Three, Suit.Diamond), new Card(Rank.Ten, Suit.Club) };
+			List<Card> royalFlush = new List<Card> { new Card(Rank.Ace, Suit.Club),
+				                                     new Card(Rank.King, Suit.Club),
+													 new Card(Rank.Queen, Suit.Club),
+													 new Card(Rank.Jack, Suit.Club),
+													 new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> straightFlush = new List<Card> { new Card(Rank.Nine, Suit.Club),
+														new Card(Rank.King, Suit.Club),
+														new Card(Rank.Queen, Suit.Club),
+														new Card(Rank.Jack, Suit.Club),
+														new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> straightFlush2 = new List<Card> { new Card(Rank.Nine, Suit.Club),
+					                                     new Card(Rank.Eight, Suit.Club),
+														 new Card(Rank.Queen, Suit.Club),
+														 new Card(Rank.Jack, Suit.Club),
+														 new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> fourOfAKind = new List<Card> { new Card(Rank.Nine, Suit.Club),
+													  new Card(Rank.Nine, Suit.Spade),
+				                                      new Card(Rank.Nine, Suit.Heart),
+				                                      new Card(Rank.Nine, Suit.Diamond),
+				                                      new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> fourOfAKind2 = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                       new Card(Rank.Nine, Suit.Spade),
+													   new Card(Rank.Nine, Suit.Heart),
+													   new Card(Rank.Nine, Suit.Diamond),
+													   new Card(Rank.Eight, Suit.Club) };
+
+			List<Card> fourOfAKind3 = new List<Card> { new Card(Rank.Seven, Suit.Club),
+													   new Card(Rank.Seven, Suit.Spade),
+													   new Card(Rank.Seven, Suit.Heart),
+													   new Card(Rank.Seven, Suit.Diamond),
+													   new Card(Rank.Eight, Suit.Club) };
+
+			List<Card> fullHouse = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                    new Card(Rank.Nine, Suit.Spade),
+													new Card(Rank.Nine, Suit.Heart),
+													new Card(Rank.Ten, Suit.Diamond),
+													new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> fullHouse2 = new List<Card> { new Card(Rank.Nine, Suit.Club),
+													 new Card(Rank.Nine, Suit.Spade),
+													 new Card(Rank.Nine, Suit.Heart),
+													 new Card(Rank.Eight, Suit.Diamond),
+													 new Card(Rank.Eight, Suit.Club) };
+
+			List<Card> fullHouse3 = new List<Card> { new Card(Rank.Eight, Suit.Club),
+													 new Card(Rank.Eight, Suit.Spade),
+													 new Card(Rank.Eight, Suit.Heart),
+													 new Card(Rank.Seven, Suit.Diamond),
+													 new Card(Rank.Seven, Suit.Club) };
+
+			List<Card> flush = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                new Card(Rank.King, Suit.Club),
+												new Card(Rank.Four, Suit.Club),
+												new Card(Rank.Six, Suit.Club),
+												new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> flush2 = new List<Card> { new Card(Rank.Nine, Suit.Heart),
+											 	 new Card(Rank.Queen, Suit.Heart),
+										  		 new Card(Rank.Four, Suit.Heart),
+												 new Card(Rank.Six, Suit.Heart),
+												 new Card(Rank.Ten, Suit.Heart) };
+
+			List<Card> straight = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                   new Card(Rank.King, Suit.Diamond),
+												   new Card(Rank.Queen, Suit.Spade),
+												   new Card(Rank.Jack, Suit.Heart),
+												   new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> straight2 = new List<Card> { new Card(Rank.Eight, Suit.Club),
+												    new Card(Rank.Nine, Suit.Diamond),
+												    new Card(Rank.Queen, Suit.Spade),
+												    new Card(Rank.Jack, Suit.Heart),
+												    new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> threeOfAKind = new List<Card> { new Card(Rank.Nine, Suit.Club),
+                                                       new Card(Rank.Nine, Suit.Spade),
+													   new Card(Rank.Nine, Suit.Heart),
+													   new Card(Rank.Three, Suit.Diamond),
+													   new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> threeOfAKind2 = new List<Card> { new Card(Rank.Nine, Suit.Club),
+													    new Card(Rank.Nine, Suit.Spade),
+													    new Card(Rank.Nine, Suit.Heart),
+													    new Card(Rank.Two, Suit.Diamond),
+													    new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> threeOfAKind3 = new List<Card> { new Card(Rank.Eight, Suit.Club),
+														new Card(Rank.Eight, Suit.Spade),
+														new Card(Rank.Eight, Suit.Heart),
+														new Card(Rank.Two, Suit.Diamond),
+														new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> twoPair = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                  new Card(Rank.Nine, Suit.Spade),
+												  new Card(Rank.Four, Suit.Heart),
+												  new Card(Rank.Four, Suit.Diamond),
+												  new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> pair = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                               new Card(Rank.Nine, Suit.Spade),
+											   new Card(Rank.Four, Suit.Heart),
+											   new Card(Rank.Three, Suit.Diamond),
+											   new Card(Rank.Ten, Suit.Club) };
+
+			List<Card> highCard = new List<Card> { new Card(Rank.Nine, Suit.Club),
+				                                   new Card(Rank.Two, Suit.Spade),
+												   new Card(Rank.Four, Suit.Heart),
+												   new Card(Rank.Three, Suit.Diamond),
+												   new Card(Rank.Ten, Suit.Club) };
 
 
 			/*List<Card> hand1cards = fourOfAKind;
