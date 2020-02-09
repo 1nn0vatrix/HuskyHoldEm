@@ -50,6 +50,8 @@
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\Asserts.cs" />
+    <Compile Include="Tests\CardTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
