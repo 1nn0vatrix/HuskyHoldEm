@@ -4,7 +4,6 @@ using System.Net;
 using System.Text;
 using System.Net.Sockets;
 using System.Xml.Serialization;
-using System.Timers;
 /**
  * Client Endpoint
  */
@@ -20,7 +19,7 @@ public class Client
         NetworkStream netStream = tc.GetStream();
         byte[] readBuffer = new byte[MAX_BUFFER_LENGTH];
         int bytesRead = netStream.Read(readBuffer, 0, readBuffer.Length);
-        for(int i = 0; i < bytesRead; i++)
+        for (int i = 0; i < bytesRead; i++)
         {
             Console.Write(Convert.ToChar(readBuffer[i]));
         }

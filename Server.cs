@@ -3,7 +3,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-
+using System.Collections.Generic;
 /**
  * Additional thread related data
  */
@@ -17,12 +17,15 @@ public struct ThreadData
         this.clientSD = socket;
         this.ThreadID = thread;
     }
+    /**
+     * Reading from the Client
+     */
     public string readFromClient(Socket tc)
     {
         byte[] readBuffer = new byte[1024];
         int bytesRead = clientSD.Receive(readBuffer);
         string response = ASCIIEncoding.ASCII.GetString(readBuffer);
-        Console.WriteLine("Server received: ");
+        Console.Write("Server received: ");
         for (int i = 0; i < bytesRead; i++)
         {
             Console.Write(Convert.ToChar(readBuffer[i]));
@@ -38,51 +41,52 @@ public struct ThreadData
         byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(input);
         clientSD.Send(bytesToSend);
     }
+    /**
+    * Opening Options for the menu
+    */
     public void startMenu()
     {
         //---get the incoming data through a network stream---
         Console.WriteLine("Connection accepted from Client(" + Convert.ToString(ThreadID) + "): " + clientSD.RemoteEndPoint);
-        string str = "Welcome to Husky Hold'Em!\n"+
+        string str = "Welcome to Husky Hold'Em!\n" +
             "  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n" +
             " | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n" +
             " | ____V||   .  || (_'_)|| ( v )|\n         | ____V||   |  ||  \\ / |\n" +
             "                 | ____V||   .  |\n                         | ____V|\n" +
-            "\nPlease Pick from the following options:\n1. Register \n2. Join A Game "+
+            "\nPlease Pick from the following options:\n1. Register \n2. Join A Game " +
             "\n3. Create a Game \n4. Unregister\n5. Exit";
         writeToClient(str);
-        string option = readFromClient(clientSD);
-        Console.WriteLine("Option = " + option);
+        string opt = readFromClient(clientSD);
+        // C# Logic breaks if you use the string value. This works. Don't change it.
+        int option = Convert.ToInt32(opt);
+        Console.WriteLine("\nOption = " + option);
         // case statement is being a pain in the butt.
         switch (option)
         {
-            case "1":
+            case 1:
                 Console.WriteLine("Register User Starts Here...");
-                Thread.Sleep(5000);
+                // just closing the socket until the function is implemented
                 clientSD.Close();
                 break;
-            case "2":
+            case 2:
                 Console.WriteLine("Join Game Starts Here...");
-                Thread.Sleep(5000);
+                // just closing the socket until the function is implemented
                 clientSD.Close();
                 break;
-            case "3":
+            case 3:
                 Console.WriteLine("Create Game Starts Here...");
-                Thread.Sleep(5000);
-                clientSD.Close();
+                // just closing the socket until the function is implemented
                 break;
-            case "4":
+            case 4:
                 Console.WriteLine("Unregister User Starts Here...");
-                Thread.Sleep(5000);
-                clientSD.Close();
+                // just closing the socket until the function is implemented
                 break;
-            case "5":
+            case 5:
                 Console.WriteLine("Goodbye!");
-                Thread.Sleep(5000);
                 clientSD.Close();
                 break;
             default:
                 Console.WriteLine("Invalid Option, try again.");
-                Thread.Sleep(5000);
                 break;
         }
     }
@@ -93,7 +97,7 @@ public struct ThreadData
  */
 public class Server
 {
-    // List<Client> RegisteredUsers = new List<Client>();
+    public List<Socket> RegisteredUsers = new List<Socket>();
     public static void Main(string[] args)
     {
         const int PORT = 8070;
