@@ -3,44 +3,55 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
-
+using System.Xml.Serialization;
+using System.Timers;
 /**
  * Client Endpoint
  */
 public class Client
 {
+    const int PORT = 8070;
+    const int MAX_BUFFER_LENGTH = 1024;
+    /**
+     *  Reading from the Server
+     */
+    public static void readFromServer(TcpClient tc)
+    {
+        NetworkStream netStream = tc.GetStream();
+        byte[] readBuffer = new byte[MAX_BUFFER_LENGTH];
+        int bytesRead = netStream.Read(readBuffer, 0, readBuffer.Length);
+        for(int i = 0; i < bytesRead; i++)
+        {
+            Console.Write(Convert.ToChar(readBuffer[i]));
+        }
+        netStream.Flush();
+    }
+    /**
+     * Writing to the server
+     */
+    public static void writeToServer(TcpClient tc, string input)
+    {
+        NetworkStream netStream = tc.GetStream();
+        netStream.Write(Encoding.ASCII.GetBytes(input), 0, input.Length);
+        netStream.Flush();
+    }
+
     public static void Main()
     {
-        const int PORT = 8070;
-        const int MAX_BUFFER_LENGTH = 100;
-
         try
         {
             Console.WriteLine("Connecting.....");
-            
             TcpClient tcpclient = new TcpClient();
             tcpclient.Connect("127.0.0.1", PORT);
-
             Console.WriteLine("Connected");
-            Console.Write("Enter the string to be transmitted: ");
+            readFromServer(tcpclient);
 
-            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
-            byte[] writeBuffer = asciiEncoding.GetBytes(Console.ReadLine());
-            
+            Console.Write("\nEnter an option: ");
+            string input = Console.ReadLine();
             Console.WriteLine("Transmitting.....");
+            writeToServer(tcpclient, input);
 
-            Stream stream = tcpclient.GetStream();
-            stream.Write(writeBuffer, 0, writeBuffer.Length);
-
-            byte[] readBuffer = new byte[MAX_BUFFER_LENGTH];
-            int bytesRead = stream.Read(readBuffer, 0, MAX_BUFFER_LENGTH);
-
-            for (int i = 0; i < bytesRead; i++)
-            {
-                Console.Write(Convert.ToChar(readBuffer[i]));
-            }
-
-            tcpclient.Close();
+            readFromServer(tcpclient);
         }
         catch (Exception e)
         {
