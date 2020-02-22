@@ -25,21 +25,19 @@ public struct ThreadData
     */
     public string ReadFromClient()
     {
-        // TODO Replace with dynamic reading 
-        byte[] readBuffer = new byte[100];
-        int bytesRead = clientSocketDescriptor.Receive(readBuffer);
-        return Encoding.ASCII.GetString(readBuffer, 0, bytesRead);
-
-        /*
-        byte[] readBuffer = new byte[1024];
-        int bytesRead = clientSD.Receive(readBuffer);
-        string response = ASCIIEncoding.ASCII.GetString(readBuffer);
-        Console.Write("Server received: ");
+        NetworkStream networkStream = new NetworkStream(clientSocketDescriptor);
+        byte[] sizeBuffer = new byte[2];
+        int bytes = networkStream.Read(sizeBuffer, 0, 2);
+        ushort size = BitConverter.ToUInt16(sizeBuffer, 0);
+        Console.WriteLine("size = " + size);
+        byte[] readBuffer = new byte[size];
+        int bytesRead = networkStream.Read(readBuffer, 0, readBuffer.Length);
         for (int i = 0; i < bytesRead; i++)
         {
             Console.Write(Convert.ToChar(readBuffer[i]));
         }
-        return response;*/
+        networkStream.Flush();
+        return Encoding.ASCII.GetString(readBuffer, 0, bytesRead);
     }
 
     /**
@@ -68,12 +66,11 @@ public struct ThreadData
             "  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n" +
             " | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n" +
             " | ____V||   .  || (_'_)|| ( v )|\n         | ____V||   |  ||  \\ / |\n" +
-            "                 | ____V||   .  |\n                         | ____V|\n" +
+            "                 | ____V||   .  |\n                         | ____V|\n"+
             "\nPlease Pick from the following options:\n1. Register \n2. Join A Game " +
             "\n3. Create a Game \n4. Unregister\n5. Exit";
         WriteToClient(str);
         string option = ReadFromClient();
-
         // C# Logic breaks if you use the string value. This works. Don't change it.
         /// int option = Convert.ToInt32(opt);
         Console.WriteLine("\nOption = [" + option + "]");
@@ -107,7 +104,6 @@ public struct ThreadData
                 break;
             default:
                 Console.WriteLine("Invalid Option, try again.");
-                clientSocketDescriptor.Close();
                 break;
         }
     }
