@@ -4,27 +4,35 @@ using System.Net;
 using System.Text;
 using System.Net.Sockets;
 using System.Xml.Serialization;
+
 /**
  * Client Endpoint
  */
 public class Client
 {
+    const string LOCAL_HOST_IP = "127.0.0.1";
     const int PORT = 8070;
-    const int MAX_BUFFER_LENGTH = 1024;
+    const int STD_BUFFER_LENGTH = 100;
+    
     /**
      *  Reading from the Server
      */
     public static void readFromServer(TcpClient tc)
     {
-        NetworkStream netStream = tc.GetStream();
-        byte[] readBuffer = new byte[MAX_BUFFER_LENGTH];
-        int bytesRead = netStream.Read(readBuffer, 0, readBuffer.Length);
+        NetworkStream networkStream = tc.GetStream();
+        byte[] sizeBuffer = new byte[2];
+        int bytes = networkStream.Read(sizeBuffer, 0, 2);
+        ushort size = BitConverter.ToUInt16(sizeBuffer, 0);
+        Console.WriteLine("size = " + size);
+        byte[] readBuffer = new byte[size];
+        int bytesRead = networkStream.Read(readBuffer, 0, readBuffer.Length);
         for (int i = 0; i < bytesRead; i++)
         {
             Console.Write(Convert.ToChar(readBuffer[i]));
         }
-        netStream.Flush();
+        networkStream.Flush();
     }
+
     /**
      * Writing to the server
      */
@@ -41,7 +49,7 @@ public class Client
         {
             Console.WriteLine("Connecting.....");
             TcpClient tcpclient = new TcpClient();
-            tcpclient.Connect("127.0.0.1", PORT);
+            tcpclient.Connect(LOCAL_HOST_IP, PORT);
             Console.WriteLine("Connected");
             readFromServer(tcpclient);
 
