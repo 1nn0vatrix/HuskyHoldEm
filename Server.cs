@@ -139,10 +139,10 @@ public class Server
                 // accepting
                 Socket clientSD = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 clientSD = tcpListener.AcceptSocket();
-
                 // registeredUsers.add(clientSD.RemoteEndPoint);
                 ThreadData client = new ThreadData(clientSD, threadCount++);
-                client.startMenu();
+                Thread newConnection = new Thread(new ThreadStart(client.startMenu));
+                newConnection.Start();
             }
         }
         catch (Exception e)
