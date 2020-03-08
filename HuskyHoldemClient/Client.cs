@@ -25,15 +25,17 @@ namespace HuskyHoldemClient
 				TcpClient tcpClient = new TcpClient();
 				tcpClient.Connect(LOCAL_HOST_IP, PORT);
 				Console.WriteLine("Connected");
-				ReadPacket(tcpClient.Client);
+				ReadPacket(tcpClient.Client);  // Read the intro message
+				while (true)
+				{
+					Console.Write("\nEnter an option: ");
+					string input = Console.ReadLine();
+					Console.WriteLine("Transmitting.....");
+					WritePacket(tcpClient.Client, input);
 
-				Console.Write("\nEnter an option: ");
-				string input = Console.ReadLine();
-				Console.WriteLine("Transmitting.....");
-				WritePacket(tcpClient.Client, input);
-
-				// Get response back from server
-				ReadPacket(tcpClient.Client);
+					// Get response back from server
+					ReadPacket(tcpClient.Client);
+				}
 			}
 			catch (Exception e)
 			{

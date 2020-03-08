@@ -30,46 +30,57 @@ namespace HuskyHoldemServer
 		{
 			//---get the incoming data through a network stream---
 			Console.WriteLine("Connection accepted from Client(" + Convert.ToString(threadId) + "): " + clientSocketDescriptor.RemoteEndPoint);
-			string str = "Welcome to Husky Hold'Em!\n" +
+			string message = "Welcome to Husky Hold'Em!\n" +
 				"  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n" +
 				" | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n" +
 				" | ____V||   .  || (_'_)|| ( v )|\n         | ____V||   |  ||  \\ / |\n" +
 				"                 | ____V||   .  |\n                         | ____V|\n" +
 				"\nPlease Pick from the following options:\n1. Register \n2. Join A Game " +
 				"\n3. Create a Game \n4. Unregister\n5. Exit";
-			WritePacket(clientSocketDescriptor, str);
-			string option = ReadPacket(clientSocketDescriptor);
-			Console.WriteLine("\nOption = [" + option + "]");
-
-			switch (option)
+			WritePacket(clientSocketDescriptor, message);
+			bool isActive = true;
+			while (isActive)
 			{
-				case "1":
-					Console.WriteLine("Register User Starts Here...");
-					// just closing the socket until the function is implemented
-					clientSocketDescriptor.Close();
-					break;
-				case "2":
-					Console.WriteLine("Join Game Starts Here...");
-					// just closing the socket until the function is implemented
-					clientSocketDescriptor.Close();
-					break;
-				case "3":
-					Console.WriteLine("Create Game Starts Here...");
-					// just closing the socket until the function is implemented
-					clientSocketDescriptor.Close();
-					break;
-				case "4":
-					Console.WriteLine("Unregister User Starts Here...");
-					clientSocketDescriptor.Close();
-					// just closing the socket until the function is implemented
-					break;
-				case "5":
-					Console.WriteLine("Goodbye!");
-					clientSocketDescriptor.Close();
-					break;
-				default:
-					Console.WriteLine("Invalid Option, try again.");
-					break;
+				string option = ReadPacket(clientSocketDescriptor);
+				Console.WriteLine("\nOption = [" + option + "]");
+
+				switch (option)
+				{
+					case "1":
+						message = "Register User Starts Here...";
+						message += "\n[Not implemented yet!]";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						break;
+					case "2":
+						message = "Join Game Starts Here...";
+						message += "\n[Not implemented yet!]";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						break;
+					case "3":
+						message = "Create Game Starts Here...";
+						message += "\n[Not implemented yet!]";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						break;
+					case "4":
+						message = "Unregister User Starts Here...";
+						message += "\n[Not implemented yet!]";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						break;
+					case "5":
+						message = "Goodbye!";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						clientSocketDescriptor.Close();
+						isActive = false;
+						break;
+					default:
+						Console.WriteLine("Invalid Option, try again.");
+						break;
+				}
 			}
 		}
 	}
