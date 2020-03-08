@@ -77,11 +77,6 @@ namespace HuskyHoldemServer
 						clientSocketDescriptor.Close();
 						isActive = false;
 						break;
-					case "6":
-						message = "Chat message:";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
-						break;
 					default:
 						Console.WriteLine("Invalid Option, try again.");
 						break;
