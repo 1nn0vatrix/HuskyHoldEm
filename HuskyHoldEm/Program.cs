@@ -20,6 +20,7 @@ namespace HuskyHoldEm
 			Console.WriteLine("Making a new deck.");
 			Deck deck = new Deck();
 			deck.Print();
+			Console.WriteLine();
 
 			Console.WriteLine("\nShuffling deck.");
 			deck.Shuffle();
@@ -28,32 +29,32 @@ namespace HuskyHoldEm
 
 			Console.WriteLine("\nMaking a new game.");
 
-			List<Player> players = new List<Player> { new Player("barbie") };
+			List<Player> players = new List<Player> { new Player("Holly Husky") };
 
 			Game game = new Game(players);
 
 			Console.WriteLine("\nStarting player with two cards...\n");
 			game.Deal(players.First(), 2);
 
-			Console.WriteLine("Showing player's hand.");
+			Console.WriteLine($"Showing {players.First().Name}'s hand.");
 			players.First().Hand.ShowHand();
 
 			Console.WriteLine("\n\nDealing player another card...\n");
 			game.Deal(players.First(), 1);
 
-			Console.WriteLine("Showing player's hand.");
+			Console.WriteLine($"Showing {players.First().Name}'s hand.");
 			players.First().Hand.ShowHand();
 
 			Console.WriteLine("\n\nDealing player another card...\n");
 			game.Deal(players.First(), 1);
 
-			Console.WriteLine("Showing player's hand.");
+			Console.WriteLine($"Showing {players.First().Name}'s hand.");
 			players.First().Hand.ShowHand();
 
 			Console.WriteLine("\n\nDealing player another card...\n");
 			game.Deal(players.First(), 1);
 
-			Console.WriteLine("Showing player's hand.");
+			Console.WriteLine($"Showing {players.First().Name}'s hand.");
 			players.First().Hand.ShowHand();
 
 			//Console.WriteLine("\nShowing deck.\n");
