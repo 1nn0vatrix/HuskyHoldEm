@@ -77,6 +77,11 @@ namespace HuskyHoldemServer
 						clientSocketDescriptor.Close();
 						isActive = false;
 						break;
+					case "6":
+						message = "Chat message:";
+						Console.WriteLine(message);
+						WritePacket(clientSocketDescriptor, message);
+						break;
 					default:
 						Console.WriteLine("Invalid Option, try again.");
 						break;
@@ -92,9 +97,9 @@ namespace HuskyHoldemServer
 	{
 		private const string LOCAL_HOST_IP = "127.0.0.1";
 
-		private List<Socket> RegisteredUsers = new List<Socket>();
+		private List<Socket> registeredUsers = new List<Socket>();
 
-		public static void Main(string[] args)
+		public void Run()
 		{
 			const int PORT = 8070;
 
@@ -115,7 +120,7 @@ namespace HuskyHoldemServer
 					// accepting
 					Socket clientSD = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 					clientSD = tcpListener.AcceptSocket();
-					// registeredUsers.add(clientSD.RemoteEndPoint);
+					registeredUsers.Add(clientSD);
 					ThreadData client = new ThreadData(clientSD, threadCount++);
 					Thread newConnection = new Thread(new ThreadStart(client.StartMenu));
 					newConnection.Start();
