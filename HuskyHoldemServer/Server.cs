@@ -12,15 +12,17 @@ namespace HuskyHoldemServer
 	/**
 	 * Additional thread related data
 	 */
-	public struct ThreadData
+	public struct ClientThread
 	{
 		public Socket clientSocketDescriptor;
 		public int threadId;
+		public Server server;
 
-		public ThreadData(Socket socket, int thread)
+		public ClientThread(Socket socket, int thread, Server s)
 		{
 			this.clientSocketDescriptor = socket;
 			this.threadId = thread;
+			server = s;
 		}
 
 		/**
@@ -116,7 +118,7 @@ namespace HuskyHoldemServer
 					Socket clientSD = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 					clientSD = tcpListener.AcceptSocket();
 					registeredUsers.Add(clientSD);
-					ThreadData client = new ThreadData(clientSD, threadCount++);
+					ClientThread client = new ClientThread(clientSD, threadCount++, this);
 					Thread newConnection = new Thread(new ThreadStart(client.StartMenu));
 					newConnection.Start();
 				}
