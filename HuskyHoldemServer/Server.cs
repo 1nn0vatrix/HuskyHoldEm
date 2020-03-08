@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using static HuskyHoldEm.NetworkUtils;
 
 namespace HuskyHoldemServer
 {
@@ -23,44 +24,9 @@ namespace HuskyHoldemServer
 		}
 
 		/**
-		* Read client data from given socket
-		*/
-		public string ReadFromClient()
-		{
-			NetworkStream networkStream = new NetworkStream(clientSocketDescriptor);
-			byte[] sizeBuffer = new byte[2];
-			int bytes = networkStream.Read(sizeBuffer, 0, 2);
-			ushort size = BitConverter.ToUInt16(sizeBuffer, 0);
-			Console.WriteLine("size = " + size);
-			byte[] readBuffer = new byte[size];
-			int bytesRead = networkStream.Read(readBuffer, 0, readBuffer.Length);
-			for (int i = 0; i < bytesRead; i++)
-			{
-				Console.Write(Convert.ToChar(readBuffer[i]));
-			}
-			networkStream.Flush();
-			return Encoding.ASCII.GetString(readBuffer, 0, bytesRead);
-		}
-
-		/**
-		 * Writes the given string to the client
-		 */
-		public void WriteToClient(string input)
-		{
-			byte[] messageBuffer = ASCIIEncoding.ASCII.GetBytes(input);
-			Console.WriteLine(input.Length);
-			ushort size = (ushort)input.Length;
-			byte[] sizeBuffer = new byte[2];
-			sizeBuffer[0] = (byte)size;
-			sizeBuffer[1] = (byte)(size >> 8);
-			clientSocketDescriptor.Send(sizeBuffer);
-			clientSocketDescriptor.Send(messageBuffer);
-		}
-
-		/**
 		 * Opening options for the menu
 		 */
-		public void startMenu()
+		public void StartMenu()
 		{
 			//---get the incoming data through a network stream---
 			Console.WriteLine("Connection accepted from Client(" + Convert.ToString(threadId) + "): " + clientSocketDescriptor.RemoteEndPoint);
@@ -71,13 +37,10 @@ namespace HuskyHoldemServer
 				"                 | ____V||   .  |\n                         | ____V|\n" +
 				"\nPlease Pick from the following options:\n1. Register \n2. Join A Game " +
 				"\n3. Create a Game \n4. Unregister\n5. Exit";
-			WriteToClient(str);
-			string option = ReadFromClient();
-			// C# Logic breaks if you use the string value. This works. Don't change it.
-			/// int option = Convert.ToInt32(opt);
+			WritePacket(clientSocketDescriptor, str);
+			string option = ReadPacket(clientSocketDescriptor);
 			Console.WriteLine("\nOption = [" + option + "]");
 
-			// case statement is being a pain in the butt
 			switch (option)
 			{
 				case "1":
@@ -143,7 +106,7 @@ namespace HuskyHoldemServer
 					clientSD = tcpListener.AcceptSocket();
 					// registeredUsers.add(clientSD.RemoteEndPoint);
 					ThreadData client = new ThreadData(clientSD, threadCount++);
-					Thread newConnection = new Thread(new ThreadStart(client.startMenu));
+					Thread newConnection = new Thread(new ThreadStart(client.StartMenu));
 					newConnection.Start();
 				}
 			}
