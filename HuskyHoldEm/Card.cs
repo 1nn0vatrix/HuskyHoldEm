@@ -48,50 +48,50 @@ namespace HuskyHoldEm
 		// Print the appearance of the card
 		public void Print()
 		{
-			string appearance = "";
+			string output = "";
 			if ((int)Rank > 10)
 			{
 				switch (Rank)
 				{
 					case Rank.Jack:
-						appearance = "J";
+						output = "J";
 						break;
 					case Rank.Queen:
-						appearance = "Q";
+						output = "Q";
 						break;
 					case Rank.King:
-						appearance = "K";
+						output = "K";
 						break;
 					case Rank.Ace:
-						appearance = "A";
+						output = "A";
 						break;
 				}
 			}
 			else
 			{
-				appearance = ((int)Rank).ToString();
+				output = ((int)Rank).ToString();
 			}
+			Console.ForegroundColor = ConsoleColor.White;
 			switch (Suit)
 			{
 				case Suit.Spade:
-					appearance += "♠";
+					output += "♠";
+					Console.ForegroundColor = ConsoleColor.White;
 					break;
 				case Suit.Heart:
-					appearance += "♥";
+					output += "♥";
+					Console.ForegroundColor = ConsoleColor.Red;
 					break;
 				case Suit.Club:
-					appearance += "♣";
+					output += "♣";
+					Console.ForegroundColor = ConsoleColor.Green;
 					break;
 				case Suit.Diamond:
-					appearance += "♦";
+					output += "♦";
+					Console.ForegroundColor = ConsoleColor.Cyan;
 					break;
 			}
-			Console.ForegroundColor = ConsoleColor.White;
-			if (Suit == Suit.Heart || Suit == Suit.Diamond)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-			}
-			Console.Write(appearance + " ");
+			Console.Write(output + " ");
 			Console.ResetColor();
 		}
 
