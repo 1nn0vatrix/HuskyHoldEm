@@ -5,8 +5,24 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
+public enum Command
+{
+	REGISTER_USER,
+	CHANGE_NAME,
+	JOIN_GAME,
+	CREATE_GAME,
+	UNREGISTER_USER,
+	GAME_RAISE,
+	GAME_STAY,
+	GAME_FOLD,
+	VIEW_LEADERBOARD,
+	CHAT,
+	DISPLAY
+}
+
 namespace HuskyHoldEm
 {
+
 	public static class NetworkUtils
 	{
 		public static string ReadPacket(Socket socket)
@@ -41,6 +57,18 @@ namespace HuskyHoldEm
 			sizeBuffer[1] = (byte)(size >> 8);
 			socket.Send(sizeBuffer);
 			socket.Send(messageBuffer);
+		}
+	}
+
+	public class Packet
+	{
+		Command command;
+		string input;
+
+		public Packet(Command command, string input = "")
+		{
+			this.command = command;
+			this.input = input;
 		}
 	}
 }
