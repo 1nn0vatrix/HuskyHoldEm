@@ -6,36 +6,36 @@ using System.Threading.Tasks;
 
 namespace HuskyHoldEm
 {
-	class Game
-	{
-		Deck deck;
+    public class Game
+    {
+        Deck deck;
 
-		public Game(List<Player> players)
-		{
-			deck = new Deck();
-			deck.Shuffle();
-			deck.Print();
-		}
+        public Game(List<Player> players)
+        {
+            deck = new Deck();
+            deck.Shuffle();
+            deck.Print();
+        }
 
-		public void Deal(Player player, int numCards)
-		{
-			if (numCards <= 0)
-			{
-				Console.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
-				return;
-			}
-			for (int i = 0; i < numCards; i++)
-			{
-				player.Hand.AddCard(deck.GetCard());
-			}
-		}
+        public void Deal(Player player, int numCards)
+        {
+            if (numCards <= 0)
+            {
+                Console.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
+                return;
+            }
+            for (int i = 0; i < numCards; i++)
+            {
+                player.Hand.AddCard(deck.GetCard());
+            }
+        }
 
-		// Just for testing, do not use in actual game.
-		public void PrintDeck()
-		{
-			deck.Print();
-		}
-	}
+        // Just for testing, do not use in actual game.
+        public void PrintDeck()
+        {
+            deck.Print();
+        }
+    }
 }
 
 /*
