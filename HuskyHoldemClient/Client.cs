@@ -48,7 +48,14 @@ namespace HuskyHoldemClient
 					// Get response back from server
 					Packet packet = ReadPacket(tcpClient.Client);
 					Console.WriteLine($"Packet Command: {packet.Command}, command success: {packet.Success}, response message: {(string)packet.DataList[0]}");
-
+					switch (selection)
+					{
+						case 1:
+							Register(tcpClient);
+							break;
+						default:
+							break;
+					}
 					if (selection == 5)
 					{
 						break;
@@ -76,6 +83,34 @@ namespace HuskyHoldemClient
 			while (selection <= 0 || selection > 5);
 
 			return selection;
+		}
+		/**
+		 * Register - allows user to pick a username and adds them to the server player
+		 *            list.
+		 */
+		public static void Register(TcpClient tcpClient)
+		{
+			// read from server (is player registered)
+			Packet packet = ReadPacket(tcpClient.Client);
+			// output message
+			Console.WriteLine((string)packet.DataList[0]);
+			// if the user already exists leave the function
+			if (!packet.Success)
+			{
+				return;
+			}
+			// otherwise request the username and write the success message
+			else
+			{
+				// read input from player for username
+				string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { Console.ReadLine() }));
+				// send it to the server
+				WritePacket(tcpClient.Client, jsonRequest);
+				// read response from server
+				packet = ReadPacket(tcpClient.Client);
+				// output the success message
+				Console.WriteLine((string)packet.DataList[0]);
+			}
 		}
 	}
 }
