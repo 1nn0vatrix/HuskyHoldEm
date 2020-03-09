@@ -6,13 +6,15 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using static HuskyHoldEm.NetworkUtils;
+using Newtonsoft.Json;
+using HuskyHoldEm;
 
 namespace HuskyHoldemServer
 {
 	/**
 	 * Additional thread related data
 	 */
-	public struct ClientThread
+	public class ClientThread
 	{
 		public Socket clientSocketDescriptor;
 		public int threadId;
@@ -32,55 +34,39 @@ namespace HuskyHoldemServer
 		{
 			//---get the incoming data through a network stream---
 			Console.WriteLine("Connection accepted from Client(" + Convert.ToString(threadId) + "): " + clientSocketDescriptor.RemoteEndPoint);
-			string message = "Welcome to Husky Hold'Em!\n" +
-				"  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n" +
-				" | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n" +
-				" | ____V||   .  || (_'_)|| ( v )|\n         | ____V||   |  ||  \\ / |\n" +
-				"                 | ____V||   .  |\n                         | ____V|\n" +
-				"\nPlease Pick from the following options:\n1. Register \n2. Join A Game " +
-				"\n3. Create a Game \n4. Unregister\n5. Exit";
-			WritePacket(clientSocketDescriptor, message);
+			string jsonResponse = string.Empty;
 			bool isActive = true;
 			while (isActive)
 			{
-				string option = ReadPacket(clientSocketDescriptor);
-				Console.WriteLine("\nOption = [" + option + "]");
+				Packet packet = ReadPacket(clientSocketDescriptor);
 
-				switch (option)
+				switch (packet.Command)
 				{
-					case "1":
-						message = "Register User Starts Here...";
-						message += "\n[Not implemented yet!]";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
+					case Command.REGISTER_USER:
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { "Register User" }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						break;
-					case "2":
-						message = "Join Game Starts Here...";
-						message += "\n[Not implemented yet!]";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
+					case Command.JOIN_GAME:
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { "Join Game" }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						break;
-					case "3":
-						message = "Create Game Starts Here...";
-						message += "\n[Not implemented yet!]";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
+					case Command.CREATE_GAME:
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true, new List<object>() { "Crate Game" }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						break;
-					case "4":
-						message = "Unregister User Starts Here...";
-						message += "\n[Not implemented yet!]";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
+					case Command.UNREGISTER_USER:
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true, new List<object>() { "Deactivate User" }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						break;
-					case "5":
-						message = "Goodbye!";
-						Console.WriteLine(message);
-						WritePacket(clientSocketDescriptor, message);
+					case Command.CLOSE_SOCKET:
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						clientSocketDescriptor.Close();
 						isActive = false;
 						break;
 					default:
-						Console.WriteLine("Invalid Option, try again.");
+						jsonResponse = JsonConvert.SerializeObject(new Packet(packet.Command, false, new List<object>() { "Invalid option, try again." }));
+						WritePacket(clientSocketDescriptor, jsonResponse);
 						break;
 				}
 			}
