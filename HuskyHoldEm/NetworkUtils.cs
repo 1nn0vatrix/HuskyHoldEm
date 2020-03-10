@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+/**
+ * You must also update Client.GetUserInput() when updating this list
+ */
 public enum Command
 {
 	REGISTER_USER = 1,
@@ -29,15 +30,21 @@ namespace HuskyHoldEm
 		public static Packet ReadPacket(Socket socket)
 		{
 			NetworkStream networkStream = new NetworkStream(socket);
+			
+			// message length buffer
 			byte[] sizeBuffer = new byte[2];
 			int bytes = networkStream.Read(sizeBuffer, 0, 2);
 			ushort size = BitConverter.ToUInt16(sizeBuffer, 0);
-			Console.WriteLine("size = " + size);
+			Console.WriteLine("size = " + size);	// todo: debugging, remove before final submission
 			
+			// message buffer
 			byte[] readBuffer = new byte[size];
 			int bytesRead = networkStream.Read(readBuffer, 0, readBuffer.Length);
+			
+			// clear for next packet
 			networkStream.Flush();
 			
+			// deserialize back into a packet
 			string jsonResponse = Encoding.ASCII.GetString(readBuffer, 0, bytesRead);
 			return JsonConvert.DeserializeObject<Packet>(jsonResponse);
 		}
@@ -47,20 +54,26 @@ namespace HuskyHoldEm
 		// The first line/word in the string could be the command to do
 		// The rest of the string is the data for that command
 		// Like a really simple HTTP
-		public static void WritePacket(Socket socket, string input)
+		public static void WritePacket(Socket socket, string message)
 		{
-			byte[] messageBuffer = ASCIIEncoding.ASCII.GetBytes(input);
-			Console.WriteLine(input.Length);
-			ushort size = (ushort)input.Length;
+			byte[] messageBuffer = ASCIIEncoding.ASCII.GetBytes(message);
+			Console.WriteLine(message.Length);	// todo: debugging, remove before final submission
+			
+			// send message length
 			byte[] sizeBuffer = new byte[2];
+			ushort size = (ushort)message.Length;
 			sizeBuffer[0] = (byte)size;
 			sizeBuffer[1] = (byte)(size >> 8);
 			socket.Send(sizeBuffer);
+			
+			// send message
 			socket.Send(messageBuffer);
 		}
 	}
-	
-	[Serializable]
+
+	/**
+	 * Data packet sent between client and server.
+	 */
 	public class Packet
 	{
 		public Command Command { get; set; }

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Net.Sockets;
-using System.Xml.Serialization;
-using static HuskyHoldEm.NetworkUtils;
-using HuskyHoldEm;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using HuskyHoldEm;
+using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
 
 namespace HuskyHoldemClient
@@ -18,6 +14,7 @@ namespace HuskyHoldemClient
 	{
 		private const string LOCAL_HOST_IP = "127.0.0.1";
 		private const int PORT = 8070;
+
 		private const string MENU = "Welcome to Husky Hold'Em!\n"
 			+ "  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n" 
 			+ " | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n" 
@@ -30,26 +27,30 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
-				Console.WriteLine("Connecting.....");
+				Console.WriteLine("[CONNECTING TO SERVER]");
 				
+				// connect to the server
 				TcpClient tcpClient = new TcpClient();
 				tcpClient.Connect(LOCAL_HOST_IP, PORT);
-				Console.WriteLine("Connected");
+				Console.WriteLine("[LIVE CONNECTION TO SERVER]");
 
 				Console.WriteLine(MENU);
 				
 				while (true)
 				{
-					int selection = GetUserInput();
-					string jsonRequest = JsonConvert.SerializeObject(new Packet((Command)selection, false, new List<object>() { "CLIENT SENDING PACKET TO SERVER TEST" }));
+					Command command = GetUserInput();
+
+					// send server API request
+					string jsonRequest = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { "CLIENT SENDING PACKET TO SERVER TEST" }));
 					WritePacket(tcpClient.Client, jsonRequest);
-					Console.WriteLine("Transmitting.....");
+					Console.WriteLine("[SENT PACKET]");
 
-					// Get response back from server
+					// receive server API response
 					Packet packet = ReadPacket(tcpClient.Client);
-					Console.WriteLine($"Packet Command: {packet.Command}, command success: {packet.Success}, response message: {(string)packet.DataList[0]}");
+					Console.WriteLine($"[RECEIVED PACKET] Command: {packet.Command}, Success: {packet.Success}, Data: {(string)packet.DataList[0]}");
 
-					if (selection == 5)
+					// the socket connection is closed, exit.
+					if (command == Command.CLOSE_SOCKET)
 					{
 						break;
 					}
@@ -61,7 +62,10 @@ namespace HuskyHoldemClient
 			}
 		}
 
-		private static int GetUserInput()
+		/**
+		 * Prompts the user to select a menu option and returns the corresponding command
+		 */
+		private static Command GetUserInput()
 		{
 			int selection = 0;
 			do
@@ -73,9 +77,9 @@ namespace HuskyHoldemClient
 				}
 				catch (Exception) { }
 			}
-			while (selection <= 0 || selection > 5);
+			while (selection <= 0 || selection > 12);
 
-			return selection;
+			return (Command)selection;
 		}
 	}
 }
