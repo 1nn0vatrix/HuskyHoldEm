@@ -35,7 +35,7 @@ namespace HuskyHoldEm
 			byte[] sizeBuffer = new byte[2];
 			int bytes = networkStream.Read(sizeBuffer, 0, 2);
 			ushort length = BitConverter.ToUInt16(sizeBuffer, 0);
-			Console.WriteLine("Incoming Message Length = " + length);	// todo: debugging, remove before final submission
+			Console.WriteLine("[READ] Message Length = " + length);	// todo: debugging, remove before final submission
 			
 			// message buffer
 			byte[] readBuffer = new byte[length];
@@ -57,7 +57,7 @@ namespace HuskyHoldEm
 		public static void WritePacket(Socket socket, string message)
 		{
 			byte[] messageBuffer = ASCIIEncoding.ASCII.GetBytes(message);
-			Console.WriteLine($"Outgoing Message Length: {message.Length}");	// todo: debugging, remove before final submission
+			Console.WriteLine($"[WRITE] Message Length: {message.Length}");	// todo: debugging, remove before final submission
 			
 			// send message length
 			byte[] sizeBuffer = new byte[2];
