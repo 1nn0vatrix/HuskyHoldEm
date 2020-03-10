@@ -12,59 +12,59 @@ namespace HuskyHoldemServer
 	/**
 	 * Additional thread related data
 	 */
-	public class ClientThread
+	public class RequestHandler
 	{
-		public Socket clientSocketDescriptor;
-		public int threadId;
+		public Socket socket;
 		public Server server;
 
-		public ClientThread(Socket socket, int thread, Server s)
+		public RequestHandler(Socket socket, Server server)
 		{
-			this.clientSocketDescriptor = socket;
-			this.threadId = thread;
-			server = s;
+			this.socket = socket;
+			this.server = server;
 		}
 
 		/**
 		 * Opening options for the menu
 		 */
-		public void StartMenu()
+		public void ProcessRequest()
 		{
 			//---get the incoming data through a network stream---
-			Console.WriteLine("Connection accepted from Client(" + Convert.ToString(threadId) + "): " + clientSocketDescriptor.RemoteEndPoint);
-			string jsonResponse = string.Empty;
+			Console.WriteLine("Connection accepted from Client: " + socket.RemoteEndPoint);
+			
 			bool isActive = true;
 			while (isActive)
 			{
-				Packet packet = ReadPacket(clientSocketDescriptor);
+				Packet packet = ReadPacket(socket);
 
+				string jsonResponse;
 				switch (packet.Command)
 				{
 					case Command.REGISTER_USER:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { "Register User" }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
+						WritePacket(socket, jsonResponse);
 						break;
 					case Command.JOIN_GAME:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { "Join Game" }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
+						WritePacket(socket, jsonResponse);
 						break;
 					case Command.CREATE_GAME:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true, new List<object>() { "Crate Game" }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
+						WritePacket(socket, jsonResponse);
 						break;
 					case Command.UNREGISTER_USER:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true, new List<object>() { "Deactivate User" }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
+						WritePacket(socket, jsonResponse);
 						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
-						clientSocketDescriptor.Close();
+						WritePacket(socket, jsonResponse);
+						this.server.activeSockets.Remove(this.socket);
+						socket.Close();
 						isActive = false;
 						break;
 					default:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(packet.Command, false, new List<object>() { "Invalid option, try again." }));
-						WritePacket(clientSocketDescriptor, jsonResponse);
+						WritePacket(socket, jsonResponse);
 						break;
 				}
 			}
@@ -77,13 +77,12 @@ namespace HuskyHoldemServer
 	public class Server
 	{
 		private const string LOCAL_HOST_IP = "127.0.0.1";
+		private const int PORT = 8070;
 
-		private List<Socket> registeredUsers = new List<Socket>();
+		public List<Socket> activeSockets = new List<Socket>();
 
 		public void Run()
 		{
-			const int PORT = 8070;
-
 			try
 			{
 				// initialize socket listener
@@ -93,17 +92,18 @@ namespace HuskyHoldemServer
 				Console.WriteLine($"The server is listening to port {PORT}");
 				Console.WriteLine($"Local Endpoint is: {tcpListener.LocalEndpoint}");
 
-				int threadCount = 0;
 				while (true)
 				{
 					Console.WriteLine("Waiting for a connection....");
 
-					// accepting
-					Socket clientSD = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-					clientSD = tcpListener.AcceptSocket();
-					registeredUsers.Add(clientSD);
-					ClientThread client = new ClientThread(clientSD, threadCount++, this);
-					Thread newConnection = new Thread(new ThreadStart(client.StartMenu));
+					// accept a new socket connection
+					Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+					socket = tcpListener.AcceptSocket();
+					activeSockets.Add(socket);
+					
+					// delegate thread to handle socket connection
+					RequestHandler requestHandler = new RequestHandler(socket, this);
+					Thread newConnection = new Thread(new ThreadStart(requestHandler.ProcessRequest));
 					newConnection.Start();
 				}
 			}
