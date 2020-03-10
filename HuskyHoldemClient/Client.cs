@@ -27,12 +27,12 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
-				Console.WriteLine("[CONNECTING TO SERVER]");
+				Console.WriteLine("[CLIENT] Connecting to server...");
 				
 				// connect to the server
 				TcpClient tcpClient = new TcpClient();
 				tcpClient.Connect(LOCAL_HOST_IP, PORT);
-				Console.WriteLine("[LIVE CONNECTION TO SERVER]");
+				Console.WriteLine("[CLIENT] Connection accepted");
 
 				Console.WriteLine(MENU);
 				
@@ -43,11 +43,11 @@ namespace HuskyHoldemClient
 					// send server API request
 					string jsonRequest = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { "CLIENT SENDING PACKET TO SERVER TEST" }));
 					WritePacket(tcpClient.Client, jsonRequest);
-					Console.WriteLine("[SENT PACKET]");
+					Console.WriteLine("[CLIENT] Sent packet");
 
 					// receive server API response
 					Packet packet = ReadPacket(tcpClient.Client);
-					Console.WriteLine($"[RECEIVED PACKET] Command: {packet.Command}, Success: {packet.Success}, Data: {(string)packet.DataList[0]}");
+					Console.WriteLine($"[CLIENT] Received packet: {packet.PacketToString()}");
 
 					// the socket connection is closed, exit.
 					if (command == Command.CLOSE_SOCKET)

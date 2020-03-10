@@ -29,7 +29,7 @@ namespace HuskyHoldemServer
 		public void ProcessRequest()
 		{
 			//---get the incoming data through a network stream---
-			Console.WriteLine("Connection accepted from Client: " + socket.RemoteEndPoint);
+			Console.WriteLine("[SERVER] Connection Accepted: " + socket.RemoteEndPoint);
 			
 			bool isActive = true;
 			while (isActive)
@@ -89,12 +89,12 @@ namespace HuskyHoldemServer
 				TcpListener tcpListener = new TcpListener(IPAddress.Parse(LOCAL_HOST_IP), PORT);
 				tcpListener.Start();
 
-				Console.WriteLine($"The server is listening to port {PORT}");
-				Console.WriteLine($"Local Endpoint is: {tcpListener.LocalEndpoint}");
+				Console.WriteLine($"[SERVER] Listening to port: {PORT}");
+				Console.WriteLine($"[SERVER] Local Endpoint: {tcpListener.LocalEndpoint}");
 
 				while (true)
 				{
-					Console.WriteLine("Waiting for a connection....");
+					Console.WriteLine("[SERVER] Waiting for a connection...");
 
 					// accept a new socket connection
 					Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

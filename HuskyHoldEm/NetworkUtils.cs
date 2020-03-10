@@ -86,5 +86,10 @@ namespace HuskyHoldEm
 			Success = success;
 			DataList = dataList;
 		}
+
+		public string PacketToString()
+		{
+			return $"[PACKET] Command: {Command}, Success: {Success}, Data: {DataList[0]}";
+		}
 	}
 }
