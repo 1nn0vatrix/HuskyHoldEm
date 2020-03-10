@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Collections.Generic;
+using HuskyHoldEm;
 using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
-using HuskyHoldEm;
 
 namespace HuskyHoldemServer
 {
