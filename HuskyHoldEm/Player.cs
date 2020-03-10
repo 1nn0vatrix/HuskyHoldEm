@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HuskyHoldEm
 {
-	public class Player
+	class Player
 	{
 		public string Name { get; set; }
 

@@ -53,7 +53,7 @@ namespace HuskyHoldEm
 		}
 	}
 
-	public class Hand : IComparable<Hand>
+	class Hand : IComparable<Hand>
 	{
 		List<Card> Cards { get; set; } = new List<Card>();
 

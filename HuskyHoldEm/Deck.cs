@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HuskyHoldEm
 {
-	public class Deck
+	class Deck
 	{
 		//NOTE: Random is not thread-safe.
 		static Random _random = new Random();
