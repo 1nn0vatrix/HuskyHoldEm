@@ -51,8 +51,7 @@ namespace HuskyHoldemServer
 						WritePacket(socket, jsonResponse);
 						break;
 					case Command.UNREGISTER_USER:
-						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true, new List<object>() { "Deactivate User" }));
-						WritePacket(socket, jsonResponse);
+						UnregisterUser(packet.DataList);
 						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
@@ -88,6 +87,26 @@ namespace HuskyHoldemServer
 			}
 
 			WritePacket(socket, registerUserResponse);
+		}
+
+		private void UnregisterUser(List<object> dataList)
+		{
+			string unregisterUserResponse;
+			string username = dataList[0].ToString().Trim();
+			if (string.IsNullOrEmpty(username))
+			{
+				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, false, new List<object>() { "Invalid username." }));
+			}
+			else if (!server.playerMap.TryGetValue(socket, out string name))
+			{
+				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, false, new List<object>() { "Player not registered." }));
+			}
+			else
+			{
+				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
+			}
+
+			WritePacket(socket, unregisterUserResponse);
 		}
 	}
 
