@@ -47,6 +47,9 @@ namespace HuskyHoldemClient
 						case Command.REGISTER_USER:
 							RegisterUser(tcpClient.Client);
 							break;
+						case Command.UNREGISTER_USER:
+							UnregisterUser(tcpClient.Client);
+							break;
 						case Command.CLOSE_SOCKET:
 							string closeSocketRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true));
 							WritePacket(tcpClient.Client, closeSocketRequest);
@@ -113,6 +116,15 @@ namespace HuskyHoldemClient
 				break;
 			}
 			while (true);
+		}
+
+		private static void UnregisterUser(Socket socket)
+		{
+			string unregisterUserRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true, new List<object>() { Username }));
+			WritePacket(socket, unregisterUserRequest);
+
+			Packet packet = ReadPacket(socket);
+			Console.WriteLine(packet.Success ? "Account Deactivated" : "Failed to unregister the current user");
 		}
 	}
 }
