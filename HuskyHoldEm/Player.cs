@@ -17,6 +17,7 @@ namespace HuskyHoldEm
 		public Player(string name)
 		{
 			Name = name;
+			Chips = 50;
 		}
 	}
 }

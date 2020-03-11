@@ -101,7 +101,6 @@ namespace HuskyHoldEm
 			{
 				c.Print();
 			}
-
 		}
 
 		private Tuple<PokerHand, List<Card>> GetRanking()

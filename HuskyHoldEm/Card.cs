@@ -75,19 +75,19 @@ namespace HuskyHoldEm
 			switch (Suit)
 			{
 				case Suit.Spade:
-					output += "♠";
+					output += "S";
 					Console.ForegroundColor = ConsoleColor.White;
 					break;
 				case Suit.Heart:
-					output += "♥";
+					output += "H";
 					Console.ForegroundColor = ConsoleColor.Red;
 					break;
 				case Suit.Club:
-					output += "♣";
+					output += "C";
 					Console.ForegroundColor = ConsoleColor.Green;
 					break;
 				case Suit.Diamond:
-					output += "♦";
+					output += "D";
 					Console.ForegroundColor = ConsoleColor.Cyan;
 					break;
 			}

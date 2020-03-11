@@ -4,9 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 
-/**
- * You must also update Client.GetUserInput() when updating this list
- */
 public enum Command
 {
 	REGISTER_USER = 1,
@@ -49,11 +46,6 @@ namespace HuskyHoldEm
 			return JsonConvert.DeserializeObject<Packet>(jsonResponse);
 		}
 
-		// TODO: might be good to have the "string input" be a Packet object
-		// The packet object would have commands like "CHAT" "FOLD" "REGISTER" "JOIN" "CREATE" etc
-		// The first line/word in the string could be the command to do
-		// The rest of the string is the data for that command
-		// Like a really simple HTTP
 		public static void WritePacket(Socket socket, string message)
 		{
 			byte[] messageBuffer = ASCIIEncoding.ASCII.GetBytes(message);

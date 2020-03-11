@@ -17,13 +17,14 @@ namespace HuskyHoldEm
 			deck.Print();
 		}
 
-		public void Deal(Player player, int numCards)
+		public void Deal(Player player, int numCards = 1)
 		{
 			if (numCards <= 0)
 			{
 				Console.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
 				return;
 			}
+
 			for (int i = 0; i < numCards; i++)
 			{
 				player.Hand.AddCard(deck.GetCard());

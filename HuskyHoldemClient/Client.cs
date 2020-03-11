@@ -40,6 +40,17 @@ namespace HuskyHoldemClient
 				{
 					Command command = GetUserInput();
 
+					switch (command)
+					{
+						case Command.REGISTER_USER:
+							// Prompt for username
+							// Validate username
+							// Send to server
+							// If username is taken, then reprompt
+							// If username is valid, show next menu of options
+							break;
+					}
+
 					// send server API request
 					string jsonRequest = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { "CLIENT SENDING PACKET TO SERVER TEST" }));
 					WritePacket(tcpClient.Client, jsonRequest);
@@ -77,7 +88,7 @@ namespace HuskyHoldemClient
 				}
 				catch (Exception) { }
 			}
-			while (selection <= 0 || selection > 12);
+			while (selection <= 0 || selection > Enum.GetValues(typeof(Command)).Length);
 
 			return (Command)selection;
 		}
