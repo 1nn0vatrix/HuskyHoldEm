@@ -23,6 +23,8 @@ namespace HuskyHoldemClient
 			+ "\nPlease Pick from the following options:\n"
 			+ "1. Register\n2. Join A Game\n3. Create a Game\n4. Unregister\n5. Exit";
 
+		private static string Username { get; set; }
+
 		public static void Main()
 		{
 			try
@@ -43,27 +45,18 @@ namespace HuskyHoldemClient
 					switch (command)
 					{
 						case Command.REGISTER_USER:
-							// Prompt for username
-							// Validate username
-							// Send to server
-							// If username is taken, then reprompt
-							// If username is valid, show next menu of options
+							RegisterUser(tcpClient.Client);
 							break;
-					}
-
-					// send server API request
-					string jsonRequest = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { "CLIENT SENDING PACKET TO SERVER TEST" }));
-					WritePacket(tcpClient.Client, jsonRequest);
-					Console.WriteLine("[CLIENT] Sent packet");
-
-					// receive server API response
-					Packet packet = ReadPacket(tcpClient.Client);
-					Console.WriteLine($"[CLIENT] Received packet: {packet.PacketToString()}");
-
-					// the socket connection is closed, exit.
-					if (command == Command.CLOSE_SOCKET)
-					{
-						break;
+						case Command.CLOSE_SOCKET:
+							string closeSocketRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true));
+							WritePacket(tcpClient.Client, closeSocketRequest);
+							Packet packet = ReadPacket(tcpClient.Client);
+							if (!packet.Success)
+							{
+								Console.WriteLine("[CLIENT] Error in closing socket connection");
+								break;
+							}
+							return;
 					}
 				}
 			}
@@ -91,6 +84,35 @@ namespace HuskyHoldemClient
 			while (selection <= 0 || selection > Enum.GetValues(typeof(Command)).Length);
 
 			return (Command)selection;
+		}
+
+		private static void RegisterUser(Socket socket)
+		{
+			do
+			{
+				Console.Write("Enter a username: ");
+				string username = Console.ReadLine().Trim();
+				if (string.IsNullOrEmpty(username))
+				{
+					Console.WriteLine("Invalid username. Please enter a username");
+					continue;
+				}
+
+				string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { username }));
+				WritePacket(socket, jsonRequest);
+
+				Packet packet = ReadPacket(socket);
+				if (!packet.Success)
+				{
+					Console.WriteLine("That username is already taken. Try Again");
+					continue;
+				}
+
+				Username = username;
+				Console.WriteLine("Player successfully registered");
+				break;
+			}
+			while (true);
 		}
 	}
 }
