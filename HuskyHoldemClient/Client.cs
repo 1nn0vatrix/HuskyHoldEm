@@ -23,7 +23,7 @@ namespace HuskyHoldemClient
 			+ "\nPlease Pick from the following options:\n"
 			+ "1. Register\n2. Join A Game\n3. Create a Game\n4. Unregister\n5. Exit";
 
-		private static string Username { get; set; }
+		private static Player Player { get; set; }
 
 		public static void Main()
 		{
@@ -111,7 +111,7 @@ namespace HuskyHoldemClient
 					break;
 				}
 
-				Username = username;
+				Player = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(packet.DataList[0]));
 				Console.WriteLine("Player successfully registered");
 				break;
 			}
@@ -120,7 +120,7 @@ namespace HuskyHoldemClient
 
 		private static void UnregisterUser(Socket socket)
 		{
-			string unregisterUserRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true, new List<object>() { Username }));
+			string unregisterUserRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true));
 			WritePacket(socket, unregisterUserRequest);
 
 			Packet packet = ReadPacket(socket);

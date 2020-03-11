@@ -76,14 +76,15 @@ namespace HuskyHoldemServer
 			{
 				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Invalid username." }));
 			} 
-			else if (server.playerMap.TryGetValue(socket, out string name))
+			else if (server.playerMap.TryGetValue(socket, out Player temp))
 			{
 				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Player already registered." }));
 			}
 			else
 			{
-				server.playerMap.Add(socket, username);
-				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true));
+				Player player = new Player(username);
+				server.playerMap.Add(socket, player);
+				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
 			}
 
 			WritePacket(socket, registerUserResponse);
@@ -92,12 +93,7 @@ namespace HuskyHoldemServer
 		private void UnregisterUser(List<object> dataList)
 		{
 			string unregisterUserResponse;
-			string username = dataList[0].ToString().Trim();
-			if (string.IsNullOrEmpty(username))
-			{
-				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, false, new List<object>() { "Invalid username." }));
-			}
-			else if (!server.playerMap.TryGetValue(socket, out string name))
+			if (!server.playerMap.TryGetValue(socket, out Player player))
 			{
 				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, false, new List<object>() { "Player not registered." }));
 			}
@@ -119,7 +115,7 @@ namespace HuskyHoldemServer
 		private const int PORT = 8070;
 
 		public List<Socket> activeSockets = new List<Socket>();
-		public Dictionary<Socket, string> playerMap = new Dictionary<Socket, string>();
+		public Dictionary<Socket, Player> playerMap = new Dictionary<Socket, Player>();
 
 		public void Run()
 		{

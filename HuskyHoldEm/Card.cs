@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum Rank
+public enum Rank
 {
 	Two = 2,
 	Three = 3,
@@ -22,7 +22,7 @@ enum Rank
 	Ace = 14  // Aces high!
 }
 
-enum Suit
+public enum Suit
 {
 	Spade = 1,
 	Heart = 2,
@@ -33,7 +33,7 @@ enum Suit
 namespace HuskyHoldEm
 {
 	[DebuggerDisplay("{Rank} {Suit}")]
-	class Card : IComparable<Card>
+	public class Card : IComparable<Card>
 	{
 		// Properties with just a get are readonly.
 		public Rank Rank { get; }
