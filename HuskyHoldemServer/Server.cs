@@ -40,8 +40,7 @@ namespace HuskyHoldemServer
 				switch (packet.Command)
 				{
 					case Command.REGISTER_USER:
-						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { "Register User" }));
-						WritePacket(socket, jsonResponse);
+						RegisterUser(packet.DataList);
 						break;
 					case Command.JOIN_GAME:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { "Join Game" }));
@@ -69,6 +68,27 @@ namespace HuskyHoldemServer
 				}
 			}
 		}
+
+		private void RegisterUser(List<object> dataList)
+		{
+			string registerUserResponse;
+			string username = dataList[0].ToString().Trim();
+			if (string.IsNullOrEmpty(username))
+			{
+				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Invalid username." }));
+			} 
+			else if (server.playerMap.TryGetValue(socket, out string name))
+			{
+				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Player already registered." }));
+			}
+			else
+			{
+				server.playerMap.Add(socket, username);
+				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true));
+			}
+
+			WritePacket(socket, registerUserResponse);
+		}
 	}
 
 	/**
@@ -80,6 +100,7 @@ namespace HuskyHoldemServer
 		private const int PORT = 8070;
 
 		public List<Socket> activeSockets = new List<Socket>();
+		public Dictionary<Socket, string> playerMap = new Dictionary<Socket, string>();
 
 		public void Run()
 		{

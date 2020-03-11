@@ -107,8 +107,8 @@ namespace HuskyHoldemClient
 				Packet packet = ReadPacket(socket);
 				if (!packet.Success)
 				{
-					Console.WriteLine("That username is already taken. Try Again");
-					continue;
+					Console.WriteLine("You are already registered");
+					break;
 				}
 
 				Username = username;
