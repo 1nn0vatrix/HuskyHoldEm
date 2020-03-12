@@ -41,18 +41,20 @@ namespace HuskyHoldemServer
 				switch (packet.Command)
 				{
 					case Command.REGISTER_USER:
-						RegisterUser(packet.DataList);
+						RegisterUser((string)packet.DataList[0]);
 						break;
 					case Command.CHANGE_NAME:
-						ChangeName(packet.DataList);
+						ChangeName((string)packet.DataList[0]);
 						break;
 					case Command.UNREGISTER_USER:
-						UnregisterUser(packet.DataList);
+						UnregisterUser();
 						break;
 					case Command.SHOW_GAMES:
 						ShowGames();
 						break;
 					case Command.JOIN_GAME:
+						List<string> stringList = packet.DataToString();
+						JoinGame(int.Parse(stringList[0]), JsonConvert.DeserializeObject<Player>(stringList[1]));
 						break;
 					case Command.CREATE_GAME:
 						break;
@@ -70,9 +72,8 @@ namespace HuskyHoldemServer
 			}
 		}
 
-		private void RegisterUser(List<object> dataList)
+		private void RegisterUser(string username)
 		{
-			string username = dataList[0].ToString().Trim();
 			if (string.IsNullOrEmpty(username))
 			{
 				SendError(socket, Command.REGISTER_USER, "Invalid Username");
@@ -91,9 +92,9 @@ namespace HuskyHoldemServer
 			WritePacket(socket, jsonResponse);
 		}
 
-		private void ChangeName(List<object> dataList)
+		private void ChangeName(string username)
 		{
-			if (dataList == null || dataList.Count == 0 || string.IsNullOrEmpty((string)dataList[0]))
+			if (string.IsNullOrEmpty(username))
 			{
 				SendError(socket, Command.CHANGE_NAME, "New username not provided.");
 				return;
@@ -106,12 +107,12 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			player.Name = (string)dataList[0];
+			player.Name = username;
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
 			WritePacket(socket, jsonResponse);
 		}
 
-		private void UnregisterUser(List<object> dataList)
+		private void UnregisterUser()
 		{
 			if (!server.playerMap.TryGetValue(socket, out Player player))
 			{
@@ -126,6 +127,19 @@ namespace HuskyHoldemServer
 		private void ShowGames()
 		{
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { server.gameList }));
+			WritePacket(socket, jsonResponse);
+		}
+
+		private void JoinGame(int gameIndex, Player player)
+		{
+			if (gameIndex < 0 || gameIndex >= server.gameList.Count || server.gameList[gameIndex].InProgress || player == null)
+			{
+				SendError(socket, Command.JOIN_GAME, "Invalid Parameters.");
+				return;
+			}
+
+			server.gameList[gameIndex].PlayerList.Add(player);
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
 			WritePacket(socket, jsonResponse);
 		}
 	}

@@ -9,7 +9,10 @@ namespace HuskyHoldEm
 	public class Game
 	{
 		public List<Player> PlayerList { get; set; }
+		public bool InProgress { get; set; }
+		public int CurrentRound { get; set; }
 		private Deck deck;
+		private int Pot { get; set; }
 
 		public Game(List<Player> players)
 		{

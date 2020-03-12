@@ -64,6 +64,9 @@ namespace HuskyHoldemClient
 						case Command.SHOW_GAMES:
 							ShowGames();
 							break;
+						case Command.JOIN_GAME:
+							JoinGame();
+							break;
 						case Command.CLOSE_SOCKET:
 							string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
 							WritePacket(socket, jsonRequest);
@@ -175,7 +178,7 @@ namespace HuskyHoldemClient
 			Console.WriteLine(packet.Success ? "Account Deactivated" : "Failed to unregister the current user");
 		}
 
-		private static void ShowGames()
+		private static List<Game> ShowGames()
 		{
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES));
 			WritePacket(socket, jsonRequest);
@@ -184,7 +187,7 @@ namespace HuskyHoldemClient
 			if (!packet.Success)
 			{
 				Console.WriteLine("[CLIENT] Error in showing games");
-				return;
+				return null;
 			}
 
 			List<Game> gameList = JsonConvert.DeserializeObject<List<Game>>(packet.DataToString()[0]);
@@ -193,6 +196,55 @@ namespace HuskyHoldemClient
 			{
 				Console.WriteLine($"Game {i}: Number of Players: {gameList[i].PlayerList.Count}");
 			}
+
+			return gameList;
+		}
+
+		private static void JoinGame()
+		{
+			if (Player == null)
+			{
+				Console.WriteLine("You are not registered");
+				return;
+			}
+
+			List<Game> gameList = ShowGames();
+			if (gameList == null)
+			{
+				return;
+			}
+			else if (gameList.Count == 0)
+			{
+				Console.WriteLine("Sorry, no games exists at the moment");
+				return;
+			}
+
+			int gameId;
+			do
+			{
+				Console.Write("Type in a open Game ID: ");
+				try
+				{
+					gameId = int.Parse(Console.ReadLine().Trim());
+					if (gameId < 0 || gameId >= gameList.Count)
+					{
+						Console.WriteLine("Invalid Game ID");
+					}
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+
+				break;
+			}
+			while (true);
+
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { gameId, Player }));
+			WritePacket(socket, jsonRequest);
+
+			Packet packet = ReadPacket(socket);
+			Console.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
 		}
 	}
 }
