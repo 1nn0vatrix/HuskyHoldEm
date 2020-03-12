@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
@@ -37,19 +38,20 @@ namespace HuskyHoldEm
 			
 			// message length buffer
 			byte[] sizeBuffer = new byte[2];
-			int bytes = networkStream.Read(sizeBuffer, 0, 2);
+			sizeBuffer = ReadAllBytes(networkStream, 2);
+
 			ushort length = BitConverter.ToUInt16(sizeBuffer, 0);
 			Console.WriteLine("[READ] Message Length = " + length);	// todo: debugging, remove before final submission
 			
 			// message buffer
 			byte[] readBuffer = new byte[length];
-			int bytesRead = networkStream.Read(readBuffer, 0, readBuffer.Length);
-			
+			readBuffer = ReadAllBytes(networkStream, length);
+
 			// clear for next packet
 			networkStream.Flush();
 			
 			// deserialize back into a packet
-			string jsonResponse = Encoding.ASCII.GetString(readBuffer, 0, bytesRead);
+			string jsonResponse = Encoding.ASCII.GetString(readBuffer, 0, readBuffer.Length);
 			return JsonConvert.DeserializeObject<Packet>(jsonResponse);
 		}
 
@@ -73,6 +75,22 @@ namespace HuskyHoldEm
 		{
 			string jsonError = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { errorMessage }));
 			WritePacket(socket, jsonError);
+		}
+
+		// Makes sure we read the exact number of bytes we need to in the message. 
+		// See https://stackoverflow.com/questions/7542235/read-specific-number-of-bytes-from-networkstream/7542291#7542291
+		private static byte[] ReadAllBytes(NetworkStream networkStream, int bytesToRead)
+		{
+			byte[] readBuffer = new byte[bytesToRead];
+			int read = 0, offset = 0;
+			int toRead = bytesToRead;
+			while (toRead > 0 && (read = networkStream.Read(readBuffer, offset, toRead)) > 0)
+			{
+				toRead -= read;
+				offset += read;
+			}
+			if (toRead > 0) throw new EndOfStreamException();
+			return readBuffer;
 		}
 	}
 
