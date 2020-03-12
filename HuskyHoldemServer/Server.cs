@@ -50,6 +50,7 @@ namespace HuskyHoldemServer
 						UnregisterUser(packet.DataList);
 						break;
 					case Command.SHOW_GAMES:
+						ShowGames();
 						break;
 					case Command.JOIN_GAME:
 						break;
@@ -86,8 +87,8 @@ namespace HuskyHoldemServer
 			Player player = new Player(username);
 			server.playerMap.Add(socket, player);
 
-			string registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
-			WritePacket(socket, registerUserResponse);
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
+			WritePacket(socket, jsonResponse);
 		}
 
 		private void ChangeName(List<object> dataList)
@@ -106,8 +107,8 @@ namespace HuskyHoldemServer
 			}
 
 			player.Name = (string)dataList[0];
-			string changeNameResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
-			WritePacket(socket, changeNameResponse);
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
+			WritePacket(socket, jsonResponse);
 		}
 
 		private void UnregisterUser(List<object> dataList)
@@ -118,8 +119,14 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			string unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
-			WritePacket(socket, unregisterUserResponse);
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
+			WritePacket(socket, jsonResponse);
+		}
+
+		private void ShowGames()
+		{
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { server.gameList }));
+			WritePacket(socket, jsonResponse);
 		}
 	}
 

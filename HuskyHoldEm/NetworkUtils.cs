@@ -84,7 +84,7 @@ namespace HuskyHoldEm
 		public bool Success { get; set; }
 		public List<object> DataList { get; set; }
 
-		public Packet(Command command, bool success, List<object> dataList = null)
+		public Packet(Command command, bool success = true, List<object> dataList = null)
 		{
 			Command = command;
 			Success = success;
@@ -94,6 +94,16 @@ namespace HuskyHoldEm
 		public string PacketToString()
 		{
 			return $"[PACKET] Command: {Command}, Success: {Success}, Data: {DataList?[0]}";
+		}
+
+		public List<string> DataToString()
+		{
+			List<string> result = new List<string>();
+			foreach (object data in DataList)
+			{
+				result.Add(JsonConvert.SerializeObject(data));
+			}
+			return result;
 		}
 	}
 }

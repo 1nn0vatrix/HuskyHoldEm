@@ -61,11 +61,12 @@ namespace HuskyHoldemClient
 						case Command.UNREGISTER_USER:
 							UnregisterUser();
 							break;
-						case Command.CREATE_GAME:
+						case Command.SHOW_GAMES:
+							ShowGames();
 							break;
 						case Command.CLOSE_SOCKET:
-							string closeSocketRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true));
-							WritePacket(socket, closeSocketRequest);
+							string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
+							WritePacket(socket, jsonRequest);
 							Packet packet = ReadPacket(socket);
 							if (!packet.Success)
 							{
@@ -129,7 +130,7 @@ namespace HuskyHoldemClient
 			}
 			else
 			{
-				Player = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(packet.DataList[0]));
+				Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
 				Console.WriteLine("[CLIENT] Player successfully registered");
 			}
 		}
@@ -161,17 +162,37 @@ namespace HuskyHoldemClient
 				return;
 			}
 
-			Player = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(packet.DataList[0]));
+			Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
 			Console.WriteLine("[CLIENT] Player name successfully changed");
 		}
 
 		private static void UnregisterUser()
 		{
-			string unregisterUserRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true));
-			WritePacket(socket, unregisterUserRequest);
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true));
+			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
 			Console.WriteLine(packet.Success ? "Account Deactivated" : "Failed to unregister the current user");
+		}
+
+		private static void ShowGames()
+		{
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES));
+			WritePacket(socket, jsonRequest);
+
+			Packet packet = ReadPacket(socket);
+			if (!packet.Success)
+			{
+				Console.WriteLine("[CLIENT] Error in showing games");
+				return;
+			}
+
+			List<Game> gameList = JsonConvert.DeserializeObject<List<Game>>(packet.DataToString()[0]);
+			Console.WriteLine("Games:");
+			for (int i = 0; i < gameList.Count; i++)
+			{
+				Console.WriteLine($"Game {i}: Number of Players: {gameList[i].PlayerList.Count}");
+			}
 		}
 	}
 }
