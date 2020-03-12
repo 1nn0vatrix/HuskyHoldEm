@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 public enum Command
 {
+	CLOSE_SOCKET = 0,
+
 	REGISTER_USER = 1,
 	CHANGE_NAME = 2,
 	UNREGISTER_USER = 3,
@@ -15,16 +17,14 @@ public enum Command
 	CREATE_GAME = 6,
 	UPDATE_GAME = 7,
 
-	CLOSE_SOCKET = 8,
+	VIEW_LEADERBOARD = 8,
+	CHAT = 9,
 
-	VIEW_LEADERBOARD = 9,
-	CHAT = 10,
+	GAME_RAISE = 10,
+	GAME_STAY = 11,
+	GAME_FOLD = 12,
 
-	GAME_RAISE = 11,
-	GAME_STAY = 12,
-	GAME_FOLD = 13,
-
-	DISPLAY = 14 // todo
+	DISPLAY = 13 // todo
 };
 
 namespace HuskyHoldEm

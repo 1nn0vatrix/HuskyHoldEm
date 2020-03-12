@@ -8,6 +8,8 @@ namespace HuskyHoldEm
 {
 	public class Game
 	{
+		public const int MAX_PLAYERS = 10;
+
 		public List<Player> PlayerList { get; set; }
 		public bool InProgress { get; set; }
 		public int CurrentRound { get; set; }

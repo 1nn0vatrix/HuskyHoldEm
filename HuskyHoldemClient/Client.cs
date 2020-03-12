@@ -28,7 +28,7 @@ namespace HuskyHoldemClient
 			+ "4. Show Games\n"
 			+ "5. Join Game\n"
 			+ "6. Create Game\n"
-			+ "7. Exit\n";
+			+ "0. Exit\n";
 
 		private static Player Player { get; set; }
 
@@ -67,6 +67,9 @@ namespace HuskyHoldemClient
 						case Command.JOIN_GAME:
 							JoinGame();
 							break;
+						case Command.CREATE_GAME:
+							CreateGame();
+							break;
 						case Command.CLOSE_SOCKET:
 							string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
 							WritePacket(socket, jsonRequest);
@@ -101,7 +104,7 @@ namespace HuskyHoldemClient
 				}
 				catch (Exception) { }
 			}
-			while (selection <= 0 || selection > Enum.GetValues(typeof(Command)).Length);
+			while (selection < 0 || selection > Enum.GetValues(typeof(Command)).Length);
 
 			return (Command)selection;
 		}
@@ -175,10 +178,17 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			Console.WriteLine(packet.Success ? "Account Deactivated" : "Failed to unregister the current user");
+			if (!packet.Success)
+			{
+				Console.WriteLine("[CLIENT] Error in deactivating the user");
+				return;
+			}
+
+			Player = null;
+			Console.WriteLine("[CLIENT] Account Deactivated");
 		}
 
-		private static List<Game> ShowGames()
+		private static List<int> ShowGames()
 		{
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES));
 			WritePacket(socket, jsonRequest);
@@ -190,11 +200,11 @@ namespace HuskyHoldemClient
 				return null;
 			}
 
-			List<Game> gameList = JsonConvert.DeserializeObject<List<Game>>(packet.DataToString()[0]);
+			List<int> gameList = JsonConvert.DeserializeObject<List<int>>(packet.DataToString()[0]);
 			Console.WriteLine("Games:");
-			for (int i = 0; i < gameList.Count; i++)
+			foreach (int gameId in gameList)
 			{
-				Console.WriteLine($"Game {i}: Number of Players: {gameList[i].PlayerList.Count}");
+				Console.WriteLine($"Game ID: {gameId}");
 			}
 
 			return gameList;
@@ -208,7 +218,7 @@ namespace HuskyHoldemClient
 				return;
 			}
 
-			List<Game> gameList = ShowGames();
+			List<int> gameList = ShowGames();
 			if (gameList == null)
 			{
 				return;
@@ -226,7 +236,7 @@ namespace HuskyHoldemClient
 				try
 				{
 					gameId = int.Parse(Console.ReadLine().Trim());
-					if (gameId < 0 || gameId >= gameList.Count)
+					if (!gameList.Contains(gameId))
 					{
 						Console.WriteLine("Invalid Game ID");
 					}
@@ -240,11 +250,26 @@ namespace HuskyHoldemClient
 			}
 			while (true);
 
-			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { gameId, Player }));
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { gameId }));
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
 			Console.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
+		}
+
+		private static void CreateGame()
+		{
+			if (Player == null)
+			{
+				Console.WriteLine("You are not registered");
+				return;
+			}
+
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME));
+			WritePacket(socket, jsonRequest);
+
+			Packet packet = ReadPacket(socket);
+			Console.WriteLine($"[CLIENT] {(packet.Success ? "Successfully created a game" : "Error in creating a game")}");
 		}
 	}
 }
