@@ -202,6 +202,13 @@ namespace HuskyHoldemClient
 
 			List<int> gameList = JsonConvert.DeserializeObject<List<int>>(packet.DataToString()[0]);
 			Console.WriteLine("Games:");
+
+			if (gameList.Count == 0)
+			{
+				Console.WriteLine("Sorry, no games exists at the moment.");
+				return null;
+			}
+
 			foreach (int gameId in gameList)
 			{
 				Console.WriteLine($"Game ID: {gameId}");
@@ -221,11 +228,6 @@ namespace HuskyHoldemClient
 			List<int> gameList = ShowGames();
 			if (gameList == null)
 			{
-				return;
-			}
-			else if (gameList.Count == 0)
-			{
-				Console.WriteLine("Sorry, no games exists at the moment");
 				return;
 			}
 
