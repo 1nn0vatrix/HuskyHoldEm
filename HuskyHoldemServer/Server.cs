@@ -35,6 +35,7 @@ namespace HuskyHoldemServer
 			while (isActive)
 			{
 				Packet packet = ReadPacket(socket);
+				Console.WriteLine(packet.PacketToString());
 
 				string jsonResponse;
 				switch (packet.Command)
@@ -42,16 +43,17 @@ namespace HuskyHoldemServer
 					case Command.REGISTER_USER:
 						RegisterUser(packet.DataList);
 						break;
-					case Command.JOIN_GAME:
-						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true, new List<object>() { "Join Game" }));
-						WritePacket(socket, jsonResponse);
-						break;
-					case Command.CREATE_GAME:
-						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true, new List<object>() { "Crate Game" }));
-						WritePacket(socket, jsonResponse);
+					case Command.CHANGE_NAME:
+						ChangeName(packet.DataList);
 						break;
 					case Command.UNREGISTER_USER:
 						UnregisterUser(packet.DataList);
+						break;
+					case Command.SHOW_GAMES:
+						break;
+					case Command.JOIN_GAME:
+						break;
+					case Command.CREATE_GAME:
 						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
@@ -61,8 +63,7 @@ namespace HuskyHoldemServer
 						isActive = false;
 						break;
 					default:
-						jsonResponse = JsonConvert.SerializeObject(new Packet(packet.Command, false, new List<object>() { "Invalid option, try again." }));
-						WritePacket(socket, jsonResponse);
+						SendError(socket, packet.Command, "Invalid option, try again.");
 						break;
 				}
 			}
@@ -70,38 +71,54 @@ namespace HuskyHoldemServer
 
 		private void RegisterUser(List<object> dataList)
 		{
-			string registerUserResponse;
 			string username = dataList[0].ToString().Trim();
 			if (string.IsNullOrEmpty(username))
 			{
-				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Invalid username." }));
+				SendError(socket, Command.REGISTER_USER, "Invalid Username");
+				return;
 			} 
 			else if (server.playerMap.TryGetValue(socket, out Player temp))
 			{
-				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, false, new List<object>() { "Player already registered." }));
-			}
-			else
-			{
-				Player player = new Player(username);
-				server.playerMap.Add(socket, player);
-				registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
+				SendError(socket, Command.REGISTER_USER, "Player already registered.");
+				return;
 			}
 
+			Player player = new Player(username);
+			server.playerMap.Add(socket, player);
+
+			string registerUserResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
 			WritePacket(socket, registerUserResponse);
+		}
+
+		private void ChangeName(List<object> dataList)
+		{
+			if (dataList == null || dataList.Count == 0 || string.IsNullOrEmpty((string)dataList[0]))
+			{
+				SendError(socket, Command.CHANGE_NAME, "New username not provided.");
+				return;
+			}
+
+			bool isPlayerRegistered = server.playerMap.TryGetValue(socket, out Player player);
+			if (!isPlayerRegistered)
+			{
+				SendError(socket, Command.CHANGE_NAME, "Player not registered.");
+				return;
+			}
+
+			player.Name = (string)dataList[0];
+			string changeNameResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
+			WritePacket(socket, changeNameResponse);
 		}
 
 		private void UnregisterUser(List<object> dataList)
 		{
-			string unregisterUserResponse;
 			if (!server.playerMap.TryGetValue(socket, out Player player))
 			{
-				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, false, new List<object>() { "Player not registered." }));
-			}
-			else
-			{
-				unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
+				SendError(socket, Command.UNREGISTER_USER, "Player not registered");
+				return;
 			}
 
+			string unregisterUserResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
 			WritePacket(socket, unregisterUserResponse);
 		}
 	}
@@ -116,6 +133,7 @@ namespace HuskyHoldemServer
 
 		public List<Socket> activeSockets = new List<Socket>();
 		public Dictionary<Socket, Player> playerMap = new Dictionary<Socket, Player>();
+		public List<Game> gameList = new List<Game>();
 
 		public void Run()
 		{

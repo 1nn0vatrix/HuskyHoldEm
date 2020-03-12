@@ -7,17 +7,23 @@ using Newtonsoft.Json;
 public enum Command
 {
 	REGISTER_USER = 1,
-	JOIN_GAME = 2,
-	CREATE_GAME = 3,
-	UNREGISTER_USER = 4,
-	CLOSE_SOCKET = 5,
-	VIEW_LEADERBOARD = 6,
-	CHAT = 7,
-	CHANGE_NAME = 8,
-	GAME_RAISE = 9,
-	GAME_STAY = 10,
-	GAME_FOLD = 11,
-	DISPLAY = 12
+	CHANGE_NAME = 2,
+	UNREGISTER_USER = 3,
+
+	SHOW_GAMES = 4,
+	JOIN_GAME = 5,
+	CREATE_GAME = 6,
+
+	CLOSE_SOCKET = 7,
+
+	VIEW_LEADERBOARD = 8,
+	CHAT = 9,
+
+	GAME_RAISE = 10,
+	GAME_STAY = 11,
+	GAME_FOLD = 12,
+
+	DISPLAY = 13
 };
 
 namespace HuskyHoldEm
@@ -60,6 +66,12 @@ namespace HuskyHoldEm
 			
 			// send message
 			socket.Send(messageBuffer);
+		}
+
+		public static void SendError(Socket socket, Command command, string errorMessage)
+		{
+			string jsonError = JsonConvert.SerializeObject(new Packet(command, false, new List<object>() { errorMessage }));
+			WritePacket(socket, jsonError);
 		}
 	}
 

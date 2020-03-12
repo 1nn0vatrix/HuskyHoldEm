@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace HuskyHoldEm
 {
-	class Game
+	public class Game
 	{
-		Deck deck;
+		public List<Player> PlayerList { get; set; }
+		private Deck deck;
 
 		public Game(List<Player> players)
 		{
+			PlayerList = players;
 			deck = new Deck();
 			deck.Shuffle();
 			deck.Print();
