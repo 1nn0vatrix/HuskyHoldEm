@@ -69,7 +69,7 @@ namespace HuskyHoldEm
 			}
 			else
 			{
-				Console.WriteLine("[!] ERROR: Tried to remove card from empty deck.");
+				DebugUtils.WriteLine("[!] ERROR: Tried to remove card from empty deck.");
 				return null;
 			}
 		}

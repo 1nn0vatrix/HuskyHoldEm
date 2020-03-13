@@ -28,7 +28,7 @@ namespace HuskyHoldEm
 		{
 			if (numCards <= 0)
 			{
-				Console.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
+				DebugUtils.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
 				return;
 			}
 

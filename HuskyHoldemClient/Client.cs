@@ -36,13 +36,13 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
-				Console.WriteLine("[CLIENT] Connecting to server...");
+				DebugUtils.WriteLine("[CLIENT] Connecting to server...");
 				
 				// connect to the server
 				TcpClient tcpClient = new TcpClient();
 				tcpClient.Connect(LOCAL_HOST_IP, PORT);
 				socket = tcpClient.Client;
-				Console.WriteLine("[CLIENT] Connection accepted");
+				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
 				Console.WriteLine(MENU);
 				
@@ -76,7 +76,7 @@ namespace HuskyHoldemClient
 							Packet packet = ReadPacket(socket);
 							if (!packet.Success)
 							{
-								Console.WriteLine("[CLIENT] Error in closing socket connection");
+								DebugUtils.WriteLine("[CLIENT] Error in closing socket connection");
 								break;
 							}
 							return;
@@ -137,7 +137,7 @@ namespace HuskyHoldemClient
 			else
 			{
 				Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
-				Console.WriteLine("[CLIENT] Player successfully registered");
+				DebugUtils.WriteLine("[CLIENT] Player successfully registered");
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace HuskyHoldemClient
 			}
 
 			Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
-			Console.WriteLine("[CLIENT] Player name successfully changed");
+			DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
 		}
 
 		private static void UnregisterUser()
@@ -180,12 +180,12 @@ namespace HuskyHoldemClient
 			Packet packet = ReadPacket(socket);
 			if (!packet.Success)
 			{
-				Console.WriteLine("[CLIENT] Error in deactivating the user");
+				DebugUtils.WriteLine("[CLIENT] Error in deactivating the user");
 				return;
 			}
 
 			Player = null;
-			Console.WriteLine("[CLIENT] Account Deactivated");
+			DebugUtils.WriteLine("[CLIENT] Account Deactivated");
 		}
 
 		private static List<int> ShowGames()
@@ -196,7 +196,7 @@ namespace HuskyHoldemClient
 			Packet packet = ReadPacket(socket);
 			if (!packet.Success)
 			{
-				Console.WriteLine("[CLIENT] Error in showing games");
+				DebugUtils.WriteLine("[CLIENT] Error in showing games");
 				return null;
 			}
 
@@ -256,7 +256,7 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			Console.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
+			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
 		}
 
 		private static void CreateGame()
@@ -271,7 +271,7 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			Console.WriteLine($"[CLIENT] {(packet.Success ? "Successfully created a game" : "Error in creating a game")}");
+			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully created a game" : "Error in creating a game")}");
 		}
 	}
 }

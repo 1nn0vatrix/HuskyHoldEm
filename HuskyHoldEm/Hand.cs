@@ -67,7 +67,7 @@ namespace HuskyHoldEm
 		{
 			if (cards == null || cards.Count < 5)
 			{
-				Console.WriteLine("Invalid hand. Need 5 cards.");
+				DebugUtils.WriteLine("Invalid hand. Need 5 cards.");
 			}
 
 			Cards = cards;
