@@ -13,7 +13,7 @@ namespace HuskyHoldEm
 
 		public int Chips { get; set; } = 0;
 
-		public Hand Hand = new Hand();
+		public Hand Hand { get; private set; } = new Hand();
 
 		public Player(string name)
 		{
