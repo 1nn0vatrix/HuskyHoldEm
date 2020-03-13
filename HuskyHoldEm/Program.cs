@@ -66,6 +66,14 @@ namespace HuskyHoldEm
 
 			Console.WriteLine("\n");
 
+			Console.WriteLine("Press any key to start game simulation...");
+			Console.ReadLine();
+
+			List<IPlayer> consolePlayers = new List<IPlayer> { new ConsolePlayer("Berbie"), new ConsolePlayer("joe") };
+
+			Game testGame = new Game(consolePlayers);
+			testGame.StartGame();
+
 			Console.ReadLine();
 		}
 	}
