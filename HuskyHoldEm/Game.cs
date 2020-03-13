@@ -38,6 +38,11 @@ namespace HuskyHoldEm
 			}
 		}
 
+		public void AddToPot(int chips)
+		{
+			Pot += chips;
+		}
+
 		// Just for testing, do not use in actual game.
 		public void PrintDeck()
 		{
