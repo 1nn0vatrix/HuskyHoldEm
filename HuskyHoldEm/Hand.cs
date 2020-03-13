@@ -90,6 +90,11 @@ namespace HuskyHoldEm
 			}
 		}
 
+		public void ClearHand()
+		{
+			Cards.Clear();
+		}
+
 		public void PrintRanking()
 		{
 			Tuple<PokerHand, List<Card>> rankingTuple = GetRanking();
