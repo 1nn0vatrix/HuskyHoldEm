@@ -43,6 +43,34 @@ namespace HuskyHoldEm
 			Pot += chips;
 		}
 
+		public List<Player> GetWinner()
+		{
+			if (PlayerList?.Count == 0)
+			{
+				return null;
+			}
+
+			// Order the players by their hand rankings
+			List<Player> OrderedPlayerList = PlayerList.OrderBy(p => p.Hand).ToList();
+
+			if (OrderedPlayerList[0].Hand.CompareTo(OrderedPlayerList[1].Hand) == 1)
+			{
+				// If the first player in the ordered list is greater than the second, then the first player wins
+				return new List<Player> { OrderedPlayerList[0] };
+			}
+			else
+			{
+				// Otherwise, it was a tie, return both players
+				return new List<Player> { OrderedPlayerList[0], OrderedPlayerList[1] };
+			}
+			// Technically, it is possible for up to four people to be tied in the following hands:
+			// High Card (ie. everyone has the same 5 numbers)
+			// Straight Flush / Regular Flush (ie. everyone has the same 5 numbers in their suits)
+			// Royal flush (this is like, almost impossible odds)
+			// The chances of any of these scenarios happening are very low.
+			// But we could write up additional logic later if we want to.
+		}
+
 		// Just for testing, do not use in actual game.
 		public void PrintDeck()
 		{
