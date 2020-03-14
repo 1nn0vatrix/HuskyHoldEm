@@ -46,5 +46,11 @@ namespace HuskyHoldemServer
 			// TODO: send a message to the client/player
 			throw new NotImplementedException();
 		}
+
+		public void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings)
+		{
+			// TODO: send a message to the client/player who won the game
+			throw new NotImplementedException();
+		}
 	}
 }

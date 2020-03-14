@@ -45,12 +45,13 @@ namespace HuskyHoldEm
 		{
 			Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
 			Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
-
+			
 			foreach (IPlayer player in IPlayerList)
 			{
 				playersStayed.Add(player, false);
 				playersCurrentPayments.Add(player, 0);
 			}
+
 			for (int round = 0; round < 4; round++)
 			{
 				foreach (IPlayer player in IPlayerList)
@@ -136,12 +137,13 @@ namespace HuskyHoldEm
 			}
 
 			// Get the winner. 
-			// TODO: Have an AnnounceWinner function in IPlayer that takes a Hand so can show the winner's hand. 
 			IPlayer winner = GetWinner()[0];
 			winner.AdjustChips(Pot);
-			Console.Write("The winner is... " + winner.Name + "! with ");
-			winner.Hand.PrintRanking();
-			Console.WriteLine($"\n{winner.Name} wins {Pot} chips, they now have {winner.Chips} chips.");
+
+			foreach (IPlayer player in IPlayerList)
+			{
+				player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {Pot} chips, they now have {winner.Chips} chips.");
+			}
 		}		
 
 		public void Deal(Player player, int numCards = 1)

@@ -28,5 +28,8 @@ namespace HuskyHoldEm
 
 		// Send the player a message
 		void SendMessage(string message);
+
+		// Display the winner
+		void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings);
 	}
 }
