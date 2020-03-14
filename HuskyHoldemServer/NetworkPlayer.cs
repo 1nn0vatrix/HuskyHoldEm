@@ -63,7 +63,6 @@ namespace HuskyHoldemServer
 			// TODO: Send the nice message with the hand and all. For now, just send a string like SendMessage.
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.DISPLAY_MESSAGE, true, new List<object>() { $"{winnerName} won!" }));
 			WritePacket(requestHandler.Socket, jsonResponse);
-			throw new NotImplementedException();
 		}
 	}
 }
