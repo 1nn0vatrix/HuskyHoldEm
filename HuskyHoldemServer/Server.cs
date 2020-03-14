@@ -14,13 +14,13 @@ namespace HuskyHoldemServer
 	 */
 	public class RequestHandler
 	{
-		public Socket socket;
-		public Server server;
+		public Socket Socket { get; }
+		public Server Server { get; }
 
 		public RequestHandler(Socket socket, Server server)
 		{
-			this.socket = socket;
-			this.server = server;
+			this.Socket = socket;
+			this.Server = server;
 		}
 
 		/**
@@ -29,12 +29,12 @@ namespace HuskyHoldemServer
 		public void ProcessRequest()
 		{
 			//---get the incoming data through a network stream---
-			DebugUtils.WriteLine("[SERVER] Connection Accepted: " + socket.RemoteEndPoint);
+			DebugUtils.WriteLine("[SERVER] Connection Accepted: " + Socket.RemoteEndPoint);
 			
 			bool isActive = true;
 			while (isActive)
 			{
-				Packet packet = ReadPacket(socket);
+				Packet packet = ReadPacket(Socket);
 				Console.WriteLine(packet.PacketToString());
 
 				string jsonResponse;
@@ -60,13 +60,13 @@ namespace HuskyHoldemServer
 						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
-						WritePacket(socket, jsonResponse);
-						this.server.activeSockets.Remove(this.socket);
-						socket.Close();
+						WritePacket(Socket, jsonResponse);
+						this.Server.activeSockets.Remove(this.Socket);
+						Socket.Close();
 						isActive = false;
 						break;
 					default:
-						SendError(socket, packet.Command, "Invalid option, try again.");
+						SendError(Socket, packet.Command, "Invalid option, try again.");
 						break;
 				}
 			}
@@ -76,101 +76,101 @@ namespace HuskyHoldemServer
 		{
 			if (string.IsNullOrEmpty(username))
 			{
-				SendError(socket, Command.REGISTER_USER, "Invalid Username");
+				SendError(Socket, Command.REGISTER_USER, "Invalid Username");
 				return;
 			} 
-			else if (server.playerMap.TryGetValue(socket, out Player temp))
+			else if (Server.playerMap.TryGetValue(Socket, out Player temp))
 			{
-				SendError(socket, Command.REGISTER_USER, "Player already registered.");
+				SendError(Socket, Command.REGISTER_USER, "Player already registered.");
 				return;
 			}
 
 			Player player = new Player(username);
-			server.playerMap.Add(socket, player);
+			Server.playerMap.Add(Socket, player);
 
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
-			WritePacket(socket, jsonResponse);
+			WritePacket(Socket, jsonResponse);
 		}
 
 		private void ChangeName(string username)
 		{
 			if (string.IsNullOrEmpty(username))
 			{
-				SendError(socket, Command.CHANGE_NAME, "New username not provided.");
+				SendError(Socket, Command.CHANGE_NAME, "New username not provided.");
 				return;
 			}
 
-			bool isPlayerRegistered = server.playerMap.TryGetValue(socket, out Player player);
+			bool isPlayerRegistered = Server.playerMap.TryGetValue(Socket, out Player player);
 			if (!isPlayerRegistered)
 			{
-				SendError(socket, Command.CHANGE_NAME, "Player not registered.");
+				SendError(Socket, Command.CHANGE_NAME, "Player not registered.");
 				return;
 			}
 
 			player.Name = username;
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
-			WritePacket(socket, jsonResponse);
+			WritePacket(Socket, jsonResponse);
 		}
 
 		private void UnregisterUser()
 		{
-			if (!server.playerMap.TryGetValue(socket, out Player player))
+			if (!Server.playerMap.TryGetValue(Socket, out Player player))
 			{
-				SendError(socket, Command.UNREGISTER_USER, "Player not registered");
+				SendError(Socket, Command.UNREGISTER_USER, "Player not registered");
 				return;
 			}
 
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, server.playerMap.Remove(socket)));
-			WritePacket(socket, jsonResponse);
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, Server.playerMap.Remove(Socket)));
+			WritePacket(Socket, jsonResponse);
 		}
 
 		private void ShowGames()
 		{
 			List<int> availableGames = new List<int>();
-			for (int i = 0; i < server.gameList.Count; i++)
+			for (int i = 0; i < Server.gameList.Count; i++)
 			{
-				if (!server.gameList[i].InProgress && server.gameList[i].PlayerList.Count < Game.MAX_PLAYERS)
+				if (!Server.gameList[i].InProgress && Server.gameList[i].PlayerList.Count < Game.MAX_PLAYERS)
 				{
 					availableGames.Add(i);
 				}
 			}
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { availableGames }));
-			WritePacket(socket, jsonResponse);
+			WritePacket(Socket, jsonResponse);
 		}
 
 		private void JoinGame(int gameIndex)
 		{
-			if (gameIndex < 0 || gameIndex >= server.gameList.Count || server.gameList[gameIndex].InProgress)
+			if (gameIndex < 0 || gameIndex >= Server.gameList.Count || Server.gameList[gameIndex].InProgress)
 			{
-				SendError(socket, Command.JOIN_GAME, "Invalid Parameters.");
+				SendError(Socket, Command.JOIN_GAME, "Invalid Parameters.");
 				return;
 			}
 
-			if (server.playerMap.TryGetValue(socket, out Player player))
+			if (Server.playerMap.TryGetValue(Socket, out Player player))
 			{
-				server.gameList[gameIndex].PlayerList.Add(player);
+				Server.gameList[gameIndex].PlayerList.Add(player);
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
-				WritePacket(socket, jsonResponse);
+				WritePacket(Socket, jsonResponse);
 				return;
 			}
 
-			SendError(socket, Command.CREATE_GAME, "Player not registered");
+			SendError(Socket, Command.CREATE_GAME, "Player not registered");
 		}
 
 		private void CreateGame()
 		{
-			if (server.playerMap.TryGetValue(socket, out Player player))
+			if (Server.playerMap.TryGetValue(Socket, out Player player))
 			{
 				Game game = new Game(new List<Player>());
 				game.PlayerList.Add(player);
-				server.gameList.Add(game);
+				Server.gameList.Add(game);
 
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true));
-				WritePacket(socket, jsonResponse);
+				WritePacket(Socket, jsonResponse);
 				return;
 			}
 
-			SendError(socket, Command.CREATE_GAME, "Invalid parameters.");
+			SendError(Socket, Command.CREATE_GAME, "Invalid parameters.");
 		}
 	}
 
