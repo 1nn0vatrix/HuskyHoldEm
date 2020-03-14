@@ -84,16 +84,18 @@ namespace HuskyHoldemServer
 				SendError(Socket, Command.REGISTER_USER, "Invalid Username");
 				return;
 			} 
-			else if (Server.playerMap.TryGetValue(Socket, out Player temp))
+			else if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer temp))
 			{
 				SendError(Socket, Command.REGISTER_USER, "Player already registered.");
 				return;
 			}
 
-			Player player = new Player(username);
+			NetworkPlayer player = new NetworkPlayer(username, this);
 			Server.playerMap.Add(Socket, player);
 
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { player }));
+			Player clientPlayerObject = new Player(player.Name);
+
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { clientPlayerObject }));
 			WritePacket(Socket, jsonResponse);
 		}
 
@@ -105,7 +107,7 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			bool isPlayerRegistered = Server.playerMap.TryGetValue(Socket, out Player player);
+			bool isPlayerRegistered = Server.playerMap.TryGetValue(Socket, out NetworkPlayer player);
 			if (!isPlayerRegistered)
 			{
 				SendError(Socket, Command.CHANGE_NAME, "Player not registered.");
@@ -119,7 +121,7 @@ namespace HuskyHoldemServer
 
 		private void UnregisterUser()
 		{
-			if (!Server.playerMap.TryGetValue(Socket, out Player player))
+			if (!Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 			{
 				SendError(Socket, Command.UNREGISTER_USER, "Player not registered");
 				return;
@@ -134,7 +136,7 @@ namespace HuskyHoldemServer
 			List<int> availableGames = new List<int>();
 			for (int i = 0; i < Server.gameList.Count; i++)
 			{
-				if (!Server.gameList[i].InProgress && Server.gameList[i].PlayerList.Count < Game.MAX_PLAYERS)
+				if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Game.MAX_PLAYERS)
 				{
 					availableGames.Add(i);
 				}
@@ -151,11 +153,22 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			if (Server.playerMap.TryGetValue(Socket, out Player player))
+			if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 			{
-				Server.gameList[gameIndex].PlayerList.Add(player);
+				Server.gameList[gameIndex].IPlayerList.Add(player);
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
 				WritePacket(Socket, jsonResponse);
+
+				if (Server.gameList[gameIndex].IPlayerList.Count == 2)
+				{
+					DebugUtils.WriteLine("[SERVER] Got two players, starting a game.");
+					jsonResponse = JsonConvert.SerializeObject(new Packet(Command.START_GAME, true));
+					foreach (NetworkPlayer np in Server.gameList[gameIndex].IPlayerList)
+					{
+						WritePacket(np.RequestHandler.Socket, jsonResponse);
+					}
+					StartGameThread(Server.gameList[gameIndex]);
+				}
 				return;
 			}
 
@@ -164,10 +177,10 @@ namespace HuskyHoldemServer
 
 		private void CreateGame()
 		{
-			if (Server.playerMap.TryGetValue(Socket, out Player player))
+			if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 			{
-				Game game = new Game(new List<Player>());
-				game.PlayerList.Add(player);
+				Game game = new Game(new List<IPlayer>());
+				// game.IPlayerList.Add(player);
 				Server.gameList.Add(game);
 
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true));
@@ -176,6 +189,13 @@ namespace HuskyHoldemServer
 			}
 
 			SendError(Socket, Command.CREATE_GAME, "Invalid parameters.");
+		}
+
+		private void StartGameThread(Game game)
+		{
+			Thread gameThread = new Thread(new ThreadStart(game.StartGame));
+			gameThread.IsBackground = true;
+			gameThread.Start();
 		}
 	}
 
@@ -188,7 +208,7 @@ namespace HuskyHoldemServer
 		private const int PORT = 8070;
 
 		public List<Socket> activeSockets = new List<Socket>();
-		public Dictionary<Socket, Player> playerMap = new Dictionary<Socket, Player>();
+		public Dictionary<Socket, NetworkPlayer> playerMap = new Dictionary<Socket, NetworkPlayer>();
 		public List<Game> gameList = new List<Game>();
 
 		public void Run()
