@@ -16,7 +16,7 @@ public enum Command
 	SHOW_GAMES = 4,
 	JOIN_GAME = 5,
 	CREATE_GAME = 6,
-	UPDATE_GAME = 7,
+	START_GAME = 7,
 
 	VIEW_LEADERBOARD = 8,
 	CHAT = 9,
@@ -32,7 +32,9 @@ public enum Command
 
 	GIVE_CARD = 16,  // Give a card to the client
 	
-	ADJUST_CHIPS = 17 // Make the client update their chip count
+	ADJUST_CHIPS = 17, // Make the client update their chip count
+
+	ANNOUCE_WINNER = 18  // Tell the client the winner
 };
 
 namespace HuskyHoldEm
