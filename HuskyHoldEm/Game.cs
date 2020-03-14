@@ -8,7 +8,7 @@ namespace HuskyHoldEm
 {
 	public class Game
 	{
-		public int MaxPlayers;
+		public int MaxPlayers { get; set; }
 
 		public List<Player> PlayerList { get; set; }
 		public List<IPlayer> IPlayerList { get; set; }
