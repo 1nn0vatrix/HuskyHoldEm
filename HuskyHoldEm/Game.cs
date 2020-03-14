@@ -13,7 +13,7 @@ namespace HuskyHoldEm
 		public List<Player> PlayerList { get; set; }
 		public List<IPlayer> IPlayerList { get; set; }
 		public bool InProgress { get; set; }
-		public int CurrentRound { get; set; }
+		public bool GameFinished { get; set; }
 		private Deck deck;
 		private int Pot { get; set; }
 
@@ -38,9 +38,9 @@ namespace HuskyHoldEm
 		public void StartGame()
 		{
 			InProgress = true;
-			CurrentRound = 0;
-			//CurrentPlayer = PlayerList[0];
 			GameLoop();
+			InProgress = false;
+			GameFinished = true;
 		}
 
 		public void GameLoop()
