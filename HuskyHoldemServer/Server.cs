@@ -58,7 +58,7 @@ namespace HuskyHoldemServer
 						JoinGame(int.Parse(packet.DataList[0].ToString()));
 						break;
 					case Command.CREATE_GAME:
-						CreateGame();
+						CreateGame(int.Parse(packet.DataList[0].ToString()));
 						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
@@ -136,7 +136,7 @@ namespace HuskyHoldemServer
 			List<int> availableGames = new List<int>();
 			for (int i = 0; i < Server.gameList.Count; i++)
 			{
-				if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Game.MAX_PLAYERS)
+				if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Server.gameList[i].MaxPlayers)
 				{
 					availableGames.Add(i);
 				}
@@ -175,11 +175,11 @@ namespace HuskyHoldemServer
 			SendError(Socket, Command.CREATE_GAME, "Player not registered");
 		}
 
-		private void CreateGame()
+		private void CreateGame(int numberOfPlayers)
 		{
 			if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 			{
-				Game game = new Game(new List<IPlayer>());
+				Game game = new Game(new List<IPlayer>(), numberOfPlayers);
 				game.IPlayerList.Add(player);
 				Server.gameList.Add(game);
 

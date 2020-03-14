@@ -71,7 +71,7 @@ namespace HuskyHoldEm
 
 			List<IPlayer> consolePlayers = new List<IPlayer> { new ConsolePlayer("Berbie"), new ConsolePlayer("joe") };
 
-			Game testGame = new Game(consolePlayers);
+			Game testGame = new Game(consolePlayers,2);
 			testGame.StartGame();
 
 			Console.ReadLine();

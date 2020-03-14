@@ -8,7 +8,7 @@ namespace HuskyHoldEm
 {
 	public class Game
 	{
-		public const int MAX_PLAYERS = 10;
+		public int MaxPlayers;
 
 		public List<Player> PlayerList { get; set; }
 		public List<IPlayer> IPlayerList { get; set; }
@@ -19,14 +19,16 @@ namespace HuskyHoldEm
 
 		public Game(List<Player> players)
 		{
+			MaxPlayers = 10;
 			PlayerList = players;
 			deck = new Deck();
 			deck.Shuffle();
 			deck.Print();
 		}
 
-		public Game(List<IPlayer> players)
+		public Game(List<IPlayer> players, int numberOfPlayers)
 		{
+			MaxPlayers = numberOfPlayers;
 			IPlayerList = players;
 			deck = new Deck();
 			deck.Shuffle();

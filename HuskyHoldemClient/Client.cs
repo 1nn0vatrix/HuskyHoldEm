@@ -281,8 +281,22 @@ namespace HuskyHoldemClient
 				Console.WriteLine("You are not registered");
 				return;
 			}
+			int numberOfPlayers;
+			do
+			{
+				Console.Write("How many players would you like to join: ");
+				numberOfPlayers = int.Parse(Console.ReadLine().Trim());
+				if (numberOfPlayers <= 1 || numberOfPlayers > 10)
+				{
+					Console.WriteLine("Invalid number of players, please select from 2-10");
+					continue;
+				}
 
-			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME));
+				break;
+			}
+			while (true);
+
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true, new List<object>() { numberOfPlayers }));
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
