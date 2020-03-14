@@ -262,6 +262,16 @@ namespace HuskyHoldemClient
 
 			Packet packet = ReadPacket(socket);
 			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
+
+			Console.WriteLine("Waiting for players...");
+			packet = ReadPacket(socket);
+
+			if (packet.Success)
+			{
+				Console.WriteLine("Starting game!");
+				//GameLoop();
+			}
+
 		}
 
 		private void CreateGame()
@@ -277,6 +287,48 @@ namespace HuskyHoldemClient
 
 			Packet packet = ReadPacket(socket);
 			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully created a game" : "Error in creating a game")}");
+		}
+
+		private void GameLoop()
+		{
+			DebugUtils.WriteLine($"[CLIENT] {Player.Name} in now in their GameLoop!");
+			bool isGameOngoing = true;
+
+			while (isGameOngoing)
+			{
+				Packet packet = ReadPacket(socket);
+
+				switch (packet.Command)
+				{
+					case Command.REQUEST_MOVE:
+						Console.WriteLine($"{Player.Name}, you have {Player.Chips} chips...\nYour hand is:");
+						Player.Hand.ShowHand();
+						Console.WriteLine("\nSTAY (0), FOLD (-1), or RAISE (#)?");
+						int choice = int.Parse(Console.ReadLine()); // TODO: make this not suck. Error handling.
+
+						string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SEND_MOVE, true, new List<object>() { choice }));
+						WritePacket(socket, jsonResponse);
+
+						break;
+					case Command.GIVE_CARD:
+						Card card = JsonConvert.DeserializeObject<Card>(packet.DataToString()[0]);
+						Player.Hand.AddCard(card);
+						break;
+					case Command.ADJUST_CHIPS:
+						int chips = JsonConvert.DeserializeObject<int>(packet.DataToString()[0]);
+						Player.Chips = chips;
+						break;
+					case Command.DISPLAY_MESSAGE:
+						string message = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
+						Console.WriteLine(message);
+						break;
+					case Command.ANNOUCE_WINNER:
+						string winner = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
+						Console.WriteLine(winner);
+						isGameOngoing = false;
+						break;
+				}
+			}
 		}
 	}
 }
