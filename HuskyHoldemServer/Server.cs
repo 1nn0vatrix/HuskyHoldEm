@@ -159,9 +159,9 @@ namespace HuskyHoldemServer
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
 				WritePacket(Socket, jsonResponse);
 
-				if (Server.gameList[gameIndex].IPlayerList.Count == 2)
+				if (Server.gameList[gameIndex].IPlayerList.Count == Server.gameList[gameIndex].MaxPlayers)
 				{
-					DebugUtils.WriteLine("[SERVER] Got two players, starting a game.");
+					DebugUtils.WriteLine($"[SERVER] Got {Server.gameList[gameIndex].MaxPlayers} players, starting a game.");
 					jsonResponse = JsonConvert.SerializeObject(new Packet(Command.START_GAME, true));
 					foreach (NetworkPlayer np in Server.gameList[gameIndex].IPlayerList)
 					{
