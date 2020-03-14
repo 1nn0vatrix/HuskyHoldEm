@@ -9,22 +9,11 @@ namespace HuskyHoldEm
 	public class Game
 	{
 		public int MaxPlayers { get; }
-
-		public List<Player> PlayerList { get; set; }
 		public List<IPlayer> IPlayerList { get; set; }
 		public bool InProgress { get; set; }
 		public bool GameFinished { get; set; }
 		private Deck deck;
 		private int Pot { get; set; }
-
-		public Game(List<Player> players)
-		{
-			MaxPlayers = 10;
-			PlayerList = players;
-			deck = new Deck();
-			deck.Shuffle();
-			deck.Print();
-		}
 
 		public Game(List<IPlayer> players, int numberOfPlayers)
 		{
