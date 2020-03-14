@@ -14,13 +14,18 @@ namespace HuskyHoldemClient
 	{
 		private const string LOCAL_HOST_IP = "127.0.0.1";
 		private const int PORT = 8070;
-		private static Socket socket;
+		private Socket socket;
 
-		private const string MENU = "Welcome to Husky Hold'Em!\n"
-			+ "  _____\n | A .  | _____\n |  /.\\ || A ^  | _____\n"
-			+ " | (_._)||  / \\ || A _  | _____\n |   |  ||  \\ / ||  ( ) || A_ _ |\n"
-			+ " | ____V||   .  || (_'_)|| ( v )|\n         | ____V||   |  ||  \\ / |\n"
-			+ "                 | ____V||   .  |\n                         | ____V|\n\n"
+		private const string MENU = "Welcome to Husky Hold'Em!\n" +
+			"  _____\n" +
+			" | A .  | _____\n" +
+			" |  /.\\ || A ^  | _____\n" + 
+			" | (_._)||  / \\ || A _  | _____\n" +
+			" |   |  ||  \\ / ||  ( ) || A_ _ |\n" + 
+			" | ____V||   .  || (_'_)|| ( v )|\n" +
+			"         | ____V||   |  ||  \\ / |\n" + 
+			"                 | ____V||   .  |\n" +
+			"                         | ____V|\n\n"
 			+ "Please Pick from the following options:\n"
 			+ "1. Register\n"
 			+ "2. Change Username\n"
@@ -30,14 +35,14 @@ namespace HuskyHoldemClient
 			+ "6. Create Game\n"
 			+ "0. Exit\n";
 
-		private static Player Player { get; set; }
+		Player Player { get; set; }
 
-		public static void Main()
+		public void Run()
 		{
 			try
 			{
 				DebugUtils.WriteLine("[CLIENT] Connecting to server...");
-				
+
 				// connect to the server
 				TcpClient tcpClient = new TcpClient();
 				tcpClient.Connect(LOCAL_HOST_IP, PORT);
@@ -45,7 +50,7 @@ namespace HuskyHoldemClient
 				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
 				Console.WriteLine(MENU);
-				
+
 				while (true)
 				{
 					Command command = GetUserInput();
@@ -92,7 +97,7 @@ namespace HuskyHoldemClient
 		/**
 		 * Prompts the user to select a menu option and returns the corresponding command
 		 */
-		private static Command GetUserInput()
+		private Command GetUserInput()
 		{
 			int selection = 0;
 			do
@@ -109,7 +114,7 @@ namespace HuskyHoldemClient
 			return (Command)selection;
 		}
 
-		private static void RegisterUser()
+		private void RegisterUser()
 		{
 			string username;
 			do
@@ -141,7 +146,7 @@ namespace HuskyHoldemClient
 			}
 		}
 
-		private static void ChangeName()
+		private void ChangeName()
 		{
 			string username;
 			do
@@ -172,7 +177,7 @@ namespace HuskyHoldemClient
 			DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
 		}
 
-		private static void UnregisterUser()
+		private void UnregisterUser()
 		{
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true));
 			WritePacket(socket, jsonRequest);
@@ -188,7 +193,7 @@ namespace HuskyHoldemClient
 			DebugUtils.WriteLine("[CLIENT] Account Deactivated");
 		}
 
-		private static List<int> ShowGames()
+		private List<int> ShowGames()
 		{
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES));
 			WritePacket(socket, jsonRequest);
@@ -217,7 +222,7 @@ namespace HuskyHoldemClient
 			return gameList;
 		}
 
-		private static void JoinGame()
+		private void JoinGame()
 		{
 			if (Player == null)
 			{
@@ -259,7 +264,7 @@ namespace HuskyHoldemClient
 			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
 		}
 
-		private static void CreateGame()
+		private void CreateGame()
 		{
 			if (Player == null)
 			{
