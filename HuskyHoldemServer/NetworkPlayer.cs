@@ -30,18 +30,20 @@ namespace HuskyHoldemServer
 		public void GiveCard(Card card)
 		{
 			Hand.AddCard(card);
-			// TODO : send the card to the client/player
+			// TODO: send the card to the client/player
 			throw new NotImplementedException();
 		}
 
 		public void AdjustChips(int amount)
 		{
+			// TODO: notify the player their new chip count
 			Chips += amount;
+			throw new NotImplementedException();
 		}
 
-		public void TellWhoseTurn(string player)
+		public void SendMessage(string message)
 		{
-			// TODO: send a message to the client/player of whose turn it is now
+			// TODO: send a message to the client/player
 			throw new NotImplementedException();
 		}
 	}

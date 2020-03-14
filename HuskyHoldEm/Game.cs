@@ -78,7 +78,7 @@ namespace HuskyHoldEm
 					foreach (IPlayer player in IPlayerList)
 					{
 						if (!player.Equals(current))
-							player.TellWhoseTurn(current.Name);
+							player.SendMessage(current.Name);
 					}
 					int choice = current.GetChoice();
 					if (choice < 0)

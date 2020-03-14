@@ -39,9 +39,9 @@ namespace HuskyHoldEm
 			Chips += amount;
 		}
 
-		public void TellWhoseTurn(string player)
+		public void SendMessage(string message)
 		{
-			Console.WriteLine($"{Name}, it's {player}'s turn now.");
+			Console.WriteLine(message);
 		}
 	}
 }

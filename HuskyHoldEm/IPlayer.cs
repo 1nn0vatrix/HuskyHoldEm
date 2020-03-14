@@ -26,7 +26,7 @@ namespace HuskyHoldEm
 		// Get the player a card
 		void GiveCard(Card card);
 
-		// Tell the player whose turn it currently is
-		void TellWhoseTurn(string player);
+		// Send the player a message
+		void SendMessage(string message);
 	}
 }
