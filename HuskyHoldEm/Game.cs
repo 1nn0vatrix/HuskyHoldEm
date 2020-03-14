@@ -13,7 +13,7 @@ namespace HuskyHoldEm
 		public bool InProgress { get; set; }
 		public bool GameFinished { get; set; }
 		private Deck deck;
-		private int Pot { get; set; }
+		private int pot = 0;
 
 		public Game(List<IPlayer> players, int numberOfPlayers)
 		{
@@ -59,7 +59,7 @@ namespace HuskyHoldEm
 						player.AdjustChips(-2);  // This should be checked before they join the game. If they don't have at least two chips, they can't play.
 						player.GiveCard(deck.GetCard());
 						player.GiveCard(deck.GetCard());
-						Pot += 2;
+						pot += 2;
 					}
 					else
 					{
@@ -118,7 +118,7 @@ namespace HuskyHoldEm
 					// Calculate what the player owes, have them pay, and update the pot.
 					int playerOwes = maxBet - playersCurrentPayments[currentPlayer];
 					currentPlayer.AdjustChips(playerOwes * -1);
-					Pot += playerOwes;
+					pot += playerOwes;
 					playersCurrentPayments[currentPlayer] += playerOwes;
 
 					// Update who the current player is
@@ -129,32 +129,13 @@ namespace HuskyHoldEm
 
 			// Get the winner. 
 			IPlayer winner = GetWinner()[0];
-			winner.AdjustChips(Pot);
+			winner.AdjustChips(pot);
 
 			foreach (IPlayer player in IPlayerList)
 			{
-				player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {Pot} chips, they now have {winner.Chips} chips.");
+				player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {pot} chips, they now have {winner.Chips} chips.");
 			}
 		}		
-
-		public void Deal(Player player, int numCards = 1)
-		{
-			if (numCards <= 0)
-			{
-				DebugUtils.WriteLine($"[!] ERROR: Number of cards requested ({numCards}) to deal was less than 1.");
-				return;
-			}
-
-			for (int i = 0; i < numCards; i++)
-			{
-				player.Hand.AddCard(deck.GetCard());
-			}
-		}
-
-		public void AddToPot(int chips)
-		{
-			Pot += chips;
-		}
 
 		public List<IPlayer> GetWinner()
 		{
