@@ -47,16 +47,18 @@ namespace HuskyHoldEm
 			{
 				Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
 				Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
-				Console.WriteLine($"\nRound {round}: Handing out cards...");
 				foreach (IPlayer player in IPlayerList)
 				{
+					player.SendMessage($"\nRound {round}: Handing out cards...");
+
 					playersStayed.Add(player, false);
 					playersCurrentPayments.Add(player, 0);
 					if (round == 0)
 					{
 						player.GiveCard(deck.GetCard());
 						player.GiveCard(deck.GetCard());
-						player.AdjustChips(-2);  // This should actually be checked before they join the game. If they don't have at least two chips, they can't play.
+						player.AdjustChips(-2);  // This should be checked before they join the game. If they don't have at least two chips, they can't play.
+						Pot += 2;
 					}
 					else
 					{
@@ -78,7 +80,7 @@ namespace HuskyHoldEm
 					foreach (IPlayer player in IPlayerList)
 					{
 						if (!player.Equals(current))
-							player.SendMessage(current.Name);
+							player.SendMessage($"{player.Name}, it's {current.Name}'s turn now.");
 					}
 					int choice = current.GetChoice();
 					if (choice < 0)
