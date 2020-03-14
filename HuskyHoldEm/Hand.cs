@@ -90,6 +90,11 @@ namespace HuskyHoldEm
 			}
 		}
 
+		public List<Card> GetCards()
+		{
+			return Cards.ToList();
+		}
+
 		public void ClearHand()
 		{
 			Cards.Clear();
