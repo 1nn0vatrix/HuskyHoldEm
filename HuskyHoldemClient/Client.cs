@@ -334,8 +334,13 @@ namespace HuskyHoldemClient
 						Console.WriteLine(message);
 						break;
 					case Command.ANNOUCE_WINNER:
-						string winner = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
-						Console.WriteLine(winner);
+						string winnerName = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
+						List<Card> winnerCards = JsonConvert.DeserializeObject<List<Card>>(packet.DataToString()[1]);
+						string winnerWinnings = JsonConvert.DeserializeObject<string>(packet.DataToString()[2]);
+						Console.Write($"The winner is... {winnerName}! Their winning hand is ");
+						Hand winnerHand = new Hand(winnerCards);
+						winnerHand.PrintRanking();
+						Console.WriteLine(winnerWinnings);
 						isGameOngoing = false;
 						break;
 				}

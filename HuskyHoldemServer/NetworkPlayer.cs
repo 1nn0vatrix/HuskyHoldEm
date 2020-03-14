@@ -60,8 +60,7 @@ namespace HuskyHoldemServer
 
 		public void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings)
 		{
-			// TODO: Send the nice message with the hand and all. For now, just send a string like SendMessage.
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.DISPLAY_MESSAGE, true, new List<object>() { $"{winnerName} won!" }));
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.ANNOUCE_WINNER, true, new List<object>() { winnerName, winnerHand.GetCards(), winnerWinnings }));
 			WritePacket(RequestHandler.Socket, jsonResponse);
 		}
 	}
