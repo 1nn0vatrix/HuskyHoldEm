@@ -27,45 +27,6 @@ namespace HuskyHoldEm
 			deck.Print();
 			Console.WriteLine();
 
-			Console.WriteLine("\nMaking a new game.");
-
-			List<Player> players = new List<Player> { new Player("Holly Husky") };
-
-			Game game = new Game(players);
-
-			Console.WriteLine("\nStarting player with two cards...\n");
-			game.Deal(players.First(), 2);
-
-			Console.WriteLine($"Showing {players.First().Name}'s hand.");
-			players.First().Hand.ShowHand();
-
-			Console.WriteLine("\n\nDealing player another card...\n");
-			game.Deal(players.First(), 1);
-
-			Console.WriteLine($"Showing {players.First().Name}'s hand.");
-			players.First().Hand.ShowHand();
-
-			Console.WriteLine("\n\nDealing player another card...\n");
-			game.Deal(players.First(), 1);
-
-			Console.WriteLine($"Showing {players.First().Name}'s hand.");
-			players.First().Hand.ShowHand();
-
-			Console.WriteLine("\n\nDealing player another card...\n");
-			game.Deal(players.First(), 1);
-
-			Console.WriteLine($"Showing {players.First().Name}'s hand.");
-			players.First().Hand.ShowHand();
-
-			//Console.WriteLine("\nShowing deck.\n");
-			//game.PrintDeck();
-			//Console.WriteLine();
-
-			Console.WriteLine($"\n\n{players[0].Name}'s highest ranking:");
-			players.First().Hand.PrintRanking();
-
-			Console.WriteLine("\n");
-
 			Console.WriteLine("Press any key to start game simulation...");
 			Console.ReadLine();
 
