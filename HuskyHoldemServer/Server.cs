@@ -6,6 +6,7 @@ using System.Threading;
 using HuskyHoldEm;
 using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 
 namespace HuskyHoldemServer
 {
@@ -16,6 +17,7 @@ namespace HuskyHoldemServer
 	{
 		public Socket Socket { get; }
 		public Server Server { get; }
+		public BlockingCollection<Packet> PacketQueue { get; } = new BlockingCollection<Packet>();
 
 		public RequestHandler(Socket socket, Server server)
 		{
@@ -64,6 +66,9 @@ namespace HuskyHoldemServer
 						this.Server.activeSockets.Remove(this.Socket);
 						Socket.Close();
 						isActive = false;
+						break;
+					case Command.SEND_MOVE:
+						PacketQueue.Add(packet);
 						break;
 					default:
 						SendError(Socket, packet.Command, "Invalid option, try again.");
