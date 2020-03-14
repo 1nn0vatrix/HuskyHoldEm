@@ -7,6 +7,7 @@ using HuskyHoldEm;
 using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace HuskyHoldemServer
 {
@@ -133,6 +134,10 @@ namespace HuskyHoldemServer
 
 		private void ShowGames()
 		{
+			// Hacky fix to remove any finished games. 
+			List<Game> completedGames = Server.gameList.Where(game => game.GameFinished).ToList();
+			Server.gameList = Server.gameList.Except(completedGames).ToList();
+
 			List<int> availableGames = new List<int>();
 			for (int i = 0; i < Server.gameList.Count; i++)
 			{
