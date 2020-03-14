@@ -287,6 +287,14 @@ namespace HuskyHoldemClient
 
 			Packet packet = ReadPacket(socket);
 			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully created a game" : "Error in creating a game")}");
+			Console.WriteLine("Waiting for players...");
+			packet = ReadPacket(socket);
+
+			if (packet.Success)
+			{
+				Console.WriteLine("Starting game!");
+				GameLoop();
+			}
 		}
 
 		private void GameLoop()

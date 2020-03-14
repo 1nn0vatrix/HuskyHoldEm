@@ -180,7 +180,7 @@ namespace HuskyHoldemServer
 			if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 			{
 				Game game = new Game(new List<IPlayer>());
-				// game.IPlayerList.Add(player);
+				game.IPlayerList.Add(player);
 				Server.gameList.Add(game);
 
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true));
