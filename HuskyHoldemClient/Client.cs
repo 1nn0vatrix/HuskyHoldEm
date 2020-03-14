@@ -269,7 +269,7 @@ namespace HuskyHoldemClient
 			if (packet.Success)
 			{
 				Console.WriteLine("Starting game!");
-				//GameLoop();
+				GameLoop();
 			}
 
 		}
