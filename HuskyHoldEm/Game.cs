@@ -43,21 +43,30 @@ namespace HuskyHoldEm
 
 		public void GameLoop()
 		{
+			Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
+			Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
+
+			foreach (IPlayer player in IPlayerList)
+			{
+				playersStayed.Add(player, false);
+				playersCurrentPayments.Add(player, 0);
+			}
 			for (int round = 0; round < 4; round++)
 			{
-				Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
-				Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
 				foreach (IPlayer player in IPlayerList)
 				{
+					// Reset which players have stayed and what they're paying for this round.
+					playersStayed[player] = false;
+					playersCurrentPayments[player] = 0;
+
 					player.SendMessage($"\nRound {round}: Handing out cards...");
 
-					playersStayed.Add(player, false);
-					playersCurrentPayments.Add(player, 0);
+					// If the round is the starting round, be sure to collect their ante.
 					if (round == 0)
 					{
-						player.GiveCard(deck.GetCard());
-						player.GiveCard(deck.GetCard());
 						player.AdjustChips(-2);  // This should be checked before they join the game. If they don't have at least two chips, they can't play.
+						player.GiveCard(deck.GetCard());
+						player.GiveCard(deck.GetCard());
 						Pot += 2;
 					}
 					else
@@ -65,10 +74,13 @@ namespace HuskyHoldEm
 						player.GiveCard(deck.GetCard());
 					}
 				}
+
+				// Initialize the round's player loop variables
 				bool isRoundDone = false;
 				IPlayer maxBetter = null;
 				int playerIndex = 0;
 				int maxBet = 0;
+
 				while (!isRoundDone)
 				{
 					if (!playersStayed.Where(p => p.Key != maxBetter).Any(p => p.Value == false))
@@ -76,27 +88,33 @@ namespace HuskyHoldEm
 						isRoundDone = true;
 						break;
 					}
-					IPlayer current = IPlayerList[playerIndex];
+
+					IPlayer currentPlayer = IPlayerList[playerIndex];
+
 					foreach (IPlayer player in IPlayerList)
 					{
-						if (!player.Equals(current))
-							player.SendMessage($"{player.Name}, it's {current.Name}'s turn now.");
+						if (!player.Equals(currentPlayer))
+							player.SendMessage($"{player.Name}, it's {currentPlayer.Name}'s turn now.");
 					}
-					int choice = current.GetChoice();
-					if (choice < 0)
+
+					int playerChoice = currentPlayer.GetChoice();
+
+					if (playerChoice < 0)
 					{
 						// TODO: Player folds.
 						// Make sure to remove from IPlayerList and playersStayed and check any player index logic accordingly
 					}
-					if (choice == 0)
+
+					if (playerChoice == 0)
 					{
-						playersStayed[current] = true;
+						playersStayed[currentPlayer] = true;
 					}
-					if (choice > 0)
+
+					if (playerChoice > 0)
 					{
-						playersStayed[current] = false;
-						maxBetter = current;
-						maxBet += choice;
+						playersStayed[currentPlayer] = false;
+						maxBetter = currentPlayer;
+						maxBet += playerChoice;
 
 						// Reset the stayed players, they must all agree to stay again
 						foreach (IPlayer player in IPlayerList)
@@ -104,14 +122,21 @@ namespace HuskyHoldEm
 							playersStayed[player] = false;
 						} 
 					}
-					int playerOwes = maxBet - playersCurrentPayments[current];
-					current.AdjustChips(playerOwes * -1);
+
+					// Calculate what the player owes, have them pay, and update the pot.
+					int playerOwes = maxBet - playersCurrentPayments[currentPlayer];
+					currentPlayer.AdjustChips(playerOwes * -1);
 					Pot += playerOwes;
-					playersCurrentPayments[current] += playerOwes;
+					playersCurrentPayments[currentPlayer] += playerOwes;
+
+					// Update who the current player is
 					playerIndex  = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
-					current = IPlayerList[playerIndex];
+					currentPlayer = IPlayerList[playerIndex];
 				}
 			}
+
+			// Get the winner. 
+			// TODO: Have an AnnounceWinner function in IPlayer that takes a Hand so can show the winner's hand. 
 			IPlayer winner = GetWinner()[0];
 			winner.AdjustChips(Pot);
 			Console.Write("The winner is... " + winner.Name + "! with ");
