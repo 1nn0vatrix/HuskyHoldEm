@@ -47,7 +47,7 @@ namespace HuskyHoldEm
 			{
 				Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
 				Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
-				Console.WriteLine($"Round {round}: Handing out cards...");
+				Console.WriteLine($"\nRound {round}: Handing out cards...");
 				foreach (IPlayer player in IPlayerList)
 				{
 					playersStayed.Add(player, false);
@@ -69,7 +69,7 @@ namespace HuskyHoldEm
 				int maxBet = 0;
 				while (!isRoundDone)
 				{
-					if (!playersStayed.Skip(1).Any(p => p.Value == false))
+					if (!playersStayed.Where(p => p.Key != maxBetter).Any(p => p.Value == false))
 					{
 						isRoundDone = true;
 						break;
@@ -83,8 +83,8 @@ namespace HuskyHoldEm
 					int choice = current.GetChoice();
 					if (choice < 0)
 					{
-						// TODO: player folds...
-						// make sure to remove from list and check and player index logic accordingly
+						// TODO: Player folds.
+						// Make sure to remove from IPlayerList and playersStayed and check any player index logic accordingly
 					}
 					if (choice == 0)
 					{
@@ -95,6 +95,12 @@ namespace HuskyHoldEm
 						playersStayed[current] = false;
 						maxBetter = current;
 						maxBet += choice;
+
+						// Reset the stayed players, they must all agree to stay again
+						foreach (IPlayer player in IPlayerList)
+						{
+							playersStayed[player] = false;
+						} 
 					}
 					int playerOwes = maxBet - playersCurrentPayments[current];
 					current.AdjustChips(playerOwes * -1);
