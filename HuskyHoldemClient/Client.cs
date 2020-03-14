@@ -321,6 +321,9 @@ namespace HuskyHoldemClient
 					case Command.GIVE_CARD:
 						Card card = JsonConvert.DeserializeObject<Card>(packet.DataToString()[0]);
 						Player.Hand.AddCard(card);
+						Console.WriteLine("You received a card.");
+						Player.Hand.ShowHand();
+						Console.WriteLine();
 						break;
 					case Command.ADJUST_CHIPS:
 						int chips = JsonConvert.DeserializeObject<int>(packet.DataToString()[0]);
