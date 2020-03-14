@@ -355,6 +355,7 @@ namespace HuskyHoldemClient
 						Hand winnerHand = new Hand(winnerCards);
 						winnerHand.PrintRanking();
 						Console.WriteLine(winnerWinnings);
+						Player.Hand.ClearHand();
 						isGameOngoing = false;
 						break;
 				}
