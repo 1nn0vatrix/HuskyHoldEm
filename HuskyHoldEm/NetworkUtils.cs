@@ -25,7 +25,14 @@ public enum Command
 	GAME_STAY = 11,
 	GAME_FOLD = 12,
 
-	DISPLAY = 13 // todo
+	DISPLAY_MESSAGE = 13,  // Display a message to the client
+
+	REQUEST_MOVE = 14,  // Request to get game move from the client
+	SEND_MOVE = 15,  // Send game move from the client to the server
+
+	GIVE_CARD = 16,  // Give a card to the client
+	
+	ADJUST_CHIPS = 17 // Make the client update their chip count
 };
 
 namespace HuskyHoldEm
