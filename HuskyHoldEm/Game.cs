@@ -105,6 +105,12 @@ namespace HuskyHoldEm
 					if (playerChoice < 0)
 					{
 						// Player folds
+						foreach (IPlayer player in IPlayerList)
+						{
+							if (!player.Equals(currentPlayer))
+								player.SendMessage($"{currentPlayer.Name} folded!");
+						}
+
 						if (maxBetter != null && maxBetter.Equals(currentPlayer))
 						{
 							maxBetter = null;
@@ -126,12 +132,24 @@ namespace HuskyHoldEm
 
 					if (playerChoice == 0)
 					{
+						foreach (IPlayer player in IPlayerList)
+						{
+							if (!player.Equals(currentPlayer))
+								player.SendMessage($"{currentPlayer.Name} stays.");
+						}
+
 						// Player stays
 						playersStayed[currentPlayer] = true;
 					}
 
 					if (playerChoice > 0)
 					{
+						foreach (IPlayer player in IPlayerList)
+						{
+							if (!player.Equals(currentPlayer))
+								player.SendMessage($"{currentPlayer.Name} raises by {playerChoice} chips!");
+						}
+
 						// Player raises
 						playersStayed[currentPlayer] = false;
 						maxBetter = currentPlayer;
