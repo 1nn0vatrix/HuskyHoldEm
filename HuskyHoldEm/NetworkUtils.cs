@@ -31,7 +31,8 @@ public enum Command
 	GIVE_CARD = 13,  // Give a card to the client
 	ADJUST_CHIPS = 14, // Make the client update their chip count
 	ANNOUCE_WINNER = 15,  // Tell the client the winner
-	SHOW_HANDS = 16  // Tell the client all the player's hands
+	SHOW_HANDS = 16,  // Tell the client all the player's hands
+	FOLD = 17  // Player folds, go back to main menu
 };
 
 namespace HuskyHoldEm
