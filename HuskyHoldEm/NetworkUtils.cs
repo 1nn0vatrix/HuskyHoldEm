@@ -90,10 +90,17 @@ namespace HuskyHoldEm
 			byte[] readBuffer = new byte[bytesToRead];
 			int read = 0, offset = 0;
 			int toRead = bytesToRead;
-			while (toRead > 0 && (read = networkStream.Read(readBuffer, offset, toRead)) > 0)
+			try
 			{
-				toRead -= read;
-				offset += read;
+				while (toRead > 0 && (read = networkStream.Read(readBuffer, offset, toRead)) > 0)
+				{
+					toRead -= read;
+					offset += read;
+				}
+			}
+			catch (IOException)
+			{
+				throw new EndOfStreamException("Client closed connection.");
 			}
 			if (toRead > 0) throw new EndOfStreamException();
 			return readBuffer;

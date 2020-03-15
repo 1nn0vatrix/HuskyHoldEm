@@ -8,6 +8,7 @@ using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.IO;
 
 namespace HuskyHoldemServer
 {
@@ -37,7 +38,30 @@ namespace HuskyHoldemServer
 			bool isActive = true;
 			while (isActive)
 			{
-				Packet packet = ReadPacket(Socket);
+				Packet packet = null;
+
+				try
+				{
+					packet = ReadPacket(Socket);
+				}
+				catch (EndOfStreamException)
+				{
+					// Client disconnected, remove them from any games.
+					if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
+					{
+						foreach (Game game in Server.gameList)
+						{
+							if (game.IPlayerList.Contains(player))
+							{
+								game.IPlayerList.Remove(player);
+							}
+						}
+						Server.playerMap.Remove(Socket);
+					}
+					isActive = false;
+					continue;
+				}
+
 				Console.WriteLine(packet.PacketToString());
 
 				string jsonResponse;
