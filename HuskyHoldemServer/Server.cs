@@ -210,7 +210,7 @@ namespace HuskyHoldemServer
 	public class Server
 	{
 		private const string LOCAL_HOST_IP = "127.0.0.1";
-		private const int PORT = 8070;
+		private const int PORT = 26795;
 
 		public List<Socket> activeSockets = new List<Socket>();
 		public Dictionary<Socket, NetworkPlayer> playerMap = new Dictionary<Socket, NetworkPlayer>();
@@ -221,7 +221,7 @@ namespace HuskyHoldemServer
 			try
 			{
 				// initialize socket listener
-				TcpListener tcpListener = new TcpListener(IPAddress.Parse(LOCAL_HOST_IP), PORT);
+				TcpListener tcpListener = new TcpListener(IPAddress.Any, PORT);
 				tcpListener.Start();
 
 				DebugUtils.WriteLine($"[SERVER] Listening to port: {PORT}");

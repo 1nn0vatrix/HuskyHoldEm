@@ -12,8 +12,8 @@ namespace HuskyHoldemClient
 	 */
 	public class Client
 	{
-		private const string LOCAL_HOST_IP = "127.0.0.1";
-		private const int PORT = 8070;
+		private string hostIP = "127.0.0.1";
+		private int port = 26795;
 		private Socket socket;
 
 		private const string MENU = "Welcome to Husky Hold'Em!\n" +
@@ -41,11 +41,18 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
+				Console.Write("\nEnter IP address of server you wish to connect to: ");
+				try
+				{
+					hostIP = Console.ReadLine().Trim();
+				}
+				catch (Exception) { }
+
 				DebugUtils.WriteLine("[CLIENT] Connecting to server...");
 
 				// connect to the server
 				TcpClient tcpClient = new TcpClient();
-				tcpClient.Connect(LOCAL_HOST_IP, PORT);
+				tcpClient.Connect(hostIP, port);
 				socket = tcpClient.Client;
 				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
