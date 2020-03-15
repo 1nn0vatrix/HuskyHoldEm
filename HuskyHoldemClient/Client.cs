@@ -331,6 +331,12 @@ namespace HuskyHoldemClient
 						string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SEND_MOVE, true, new List<object>() { choice }));
 						WritePacket(socket, jsonResponse);
 
+						// If player folds, exit the function.
+						if (choice == -1)
+						{
+							isGameOngoing = false;
+						}
+
 						break;
 					case Command.GIVE_CARD:
 						Card card = JsonConvert.DeserializeObject<Card>(packet.DataToString()[0]);
@@ -361,10 +367,18 @@ namespace HuskyHoldemClient
 						string winnerName = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
 						List<Card> winnerCards = JsonConvert.DeserializeObject<List<Card>>(packet.DataToString()[1]);
 						string winnerWinnings = JsonConvert.DeserializeObject<string>(packet.DataToString()[2]);
-						Console.Write($"The winner is... {winnerName}! Their winning hand is ");
-						Hand winnerHand = new Hand(winnerCards);
-						winnerHand.PrintRanking();
+
+						// Only print the ranking if they finished the entire round and have five cards.
+						if (winnerCards.Count == 5)
+						{
+							Console.Write($"The winner is... {winnerName}! Their winning hand is ");
+							Hand winnerHand = new Hand(winnerCards);
+							winnerHand.PrintRanking();
+						}
+
 						Console.WriteLine(winnerWinnings);
+
+						// Empty the player's hand for further games
 						Player.Hand.ClearHand();
 						isGameOngoing = false;
 						break;

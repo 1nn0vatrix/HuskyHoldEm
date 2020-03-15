@@ -45,15 +45,6 @@ namespace HuskyHoldEm
 
 			for (int round = 0; round < 4; round++)
 			{
-				// Check if there's only one player left, if so, they've won.
-				if (IPlayerList.Count == 1)
-				{
-					IPlayer lonelyWinner = IPlayerList.First();
-					lonelyWinner.AdjustChips(pot);
-					lonelyWinner.SendMessage($"\n{lonelyWinner.Name}, everyone folded! You win {pot} chips, and now have {lonelyWinner.Chips} chips.");
-					return;
-				}
-
 				foreach (IPlayer player in IPlayerList)
 				{
 					// Reset which players have stayed and what they're paying for this round.
@@ -86,6 +77,15 @@ namespace HuskyHoldEm
 
 				while (!isRoundDone)
 				{
+					// Check if there's only one player left, if so, they've won.
+					if (IPlayerList.Count == 1)
+					{
+						IPlayer lonelyWinner = IPlayerList.First();
+						lonelyWinner.AdjustChips(pot);
+						lonelyWinner.AnnounceWinner(lonelyWinner.Name, lonelyWinner.Hand, $"\n{lonelyWinner.Name}, everyone folded! You win {pot} chips, and now have {lonelyWinner.Chips} chips.");
+						return;
+					}
+
 					if (!playersStayed.Where(p => p.Key != maxBetter).Any(p => p.Value == false))
 					{
 						isRoundDone = true;
@@ -116,7 +116,7 @@ namespace HuskyHoldEm
 						if (IPlayerList.Count() > 0)
 						{
 							// Update who the current player is
-							playerIndex = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
+							playerIndex = playerIndex > IPlayerList.Count - 1 ? 0 : playerIndex;
 							currentPlayer = IPlayerList[playerIndex];
 						}
 

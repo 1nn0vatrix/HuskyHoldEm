@@ -56,8 +56,11 @@ namespace HuskyHoldEm
 
 		public void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings)
 		{
-			Console.Write($"The winner is... {winnerName}! Their winning hand is ");
-			winnerHand.PrintRanking();
+			if (winnerHand.GetCards().Count == 5)
+			{
+				Console.Write($"The winner is... {winnerName}! Their winning hand is ");
+				winnerHand.PrintRanking();
+			}
 			Console.WriteLine(winnerWinnings);
 		}
 	}
