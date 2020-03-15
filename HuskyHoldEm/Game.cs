@@ -97,7 +97,7 @@ namespace HuskyHoldEm
 					foreach (IPlayer player in IPlayerList)
 					{
 						if (!player.Equals(currentPlayer))
-							player.SendMessage($"{player.Name}, it's {currentPlayer.Name}'s turn now.");
+							player.SendMessage($"It's {currentPlayer.Name}'s turn now.");
 					}
 
 					int playerChoice = currentPlayer.GetChoice();
