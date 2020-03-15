@@ -45,6 +45,15 @@ namespace HuskyHoldEm
 
 			for (int round = 0; round < 4; round++)
 			{
+				// Check if there's only one player left, if so, they've won.
+				if (IPlayerList.Count == 1)
+				{
+					IPlayer lonelyWinner = IPlayerList.First();
+					lonelyWinner.AdjustChips(pot);
+					lonelyWinner.SendMessage($"\n{lonelyWinner.Name}, everyone folded! You win {pot} chips, and now have {lonelyWinner.Chips} chips.");
+					return;
+				}
+
 				foreach (IPlayer player in IPlayerList)
 				{
 					// Reset which players have stayed and what they're paying for this round.
@@ -95,17 +104,35 @@ namespace HuskyHoldEm
 
 					if (playerChoice < 0)
 					{
-						// TODO: Player folds.
-						// Make sure to remove from IPlayerList and playersStayed and check any player index logic accordingly
+						// Player folds
+						if (maxBetter != null && maxBetter.Equals(currentPlayer))
+						{
+							maxBetter = null;
+						}
+						playersStayed.Remove(currentPlayer);
+						playersCurrentPayments.Remove(currentPlayer);
+						IPlayerList.Remove(currentPlayer);
+
+						if (IPlayerList.Count() > 0)
+						{
+							// Update who the current player is
+							playerIndex = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
+							currentPlayer = IPlayerList[playerIndex];
+						}
+
+						// Move on in the game
+						continue;
 					}
 
 					if (playerChoice == 0)
 					{
+						// Player stays
 						playersStayed[currentPlayer] = true;
 					}
 
 					if (playerChoice > 0)
 					{
+						// Player raises
 						playersStayed[currentPlayer] = false;
 						maxBetter = currentPlayer;
 						maxBet += playerChoice;
@@ -135,7 +162,8 @@ namespace HuskyHoldEm
 				player.ShowHands(IPlayerList);
 			}
 
-			// Get the winner. 
+			// Get the winner.
+			// TODO: Split the pot if there's a tie.
 			IPlayer winner = GetWinner()[0];
 			winner.AdjustChips(pot);
 
