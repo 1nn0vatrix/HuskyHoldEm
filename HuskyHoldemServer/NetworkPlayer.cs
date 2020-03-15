@@ -34,6 +34,11 @@ namespace HuskyHoldemServer
 
 			// The Take method blocks if there are no items in the collection and unblocks as soon as a new item is added to the collection.
 			Packet packet = RequestHandler.PacketQueue.Take();
+			if (!packet.Success)
+			{
+				// Client disconnected in the middle of a game, FOLD by default
+				return -1;
+			}
 			return int.Parse(packet.DataList[0].ToString());
 		}
 
