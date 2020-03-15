@@ -202,7 +202,7 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			SendError(Socket, Command.CREATE_GAME, "Player not registered");
+			SendError(Socket, Command.JOIN_GAME, "Player not registered");
 		}
 
 		private void CreateGame(int numberOfPlayers)
