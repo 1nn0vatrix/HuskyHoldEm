@@ -9,34 +9,29 @@ public enum Command
 {
 	CLOSE_SOCKET = 0,
 
+	// Main menu user commands
 	REGISTER_USER = 1,
 	CHANGE_NAME = 2,
 	UNREGISTER_USER = 3,
 
+	// Main menu game commands
 	SHOW_GAMES = 4,
 	JOIN_GAME = 5,
 	CREATE_GAME = 6,
 	START_GAME = 7,
-
+	
+	// Extra credit commands
 	VIEW_LEADERBOARD = 8,
 	CHAT = 9,
 
-	GAME_RAISE = 10,
-	GAME_STAY = 11,
-	GAME_FOLD = 12,
-
-	DISPLAY_MESSAGE = 13,  // Display a message to the client
-
-	REQUEST_MOVE = 14,  // Request to get game move from the client
-	SEND_MOVE = 15,  // Send game move from the client to the server
-
-	GIVE_CARD = 16,  // Give a card to the client
-	
-	ADJUST_CHIPS = 17, // Make the client update their chip count
-
-	ANNOUCE_WINNER = 18,  // Tell the client the winner
-
-	SHOW_HANDS = 19  // Tell the client all the player's hands
+	// Game Loop commands
+	DISPLAY_MESSAGE = 10,  // Display a string message to the client
+	REQUEST_MOVE = 11,  // Request to get game move from the client
+	SEND_MOVE = 12,  // Send game move from the client to the server
+	GIVE_CARD = 13,  // Give a card to the client
+	ADJUST_CHIPS = 14, // Make the client update their chip count
+	ANNOUCE_WINNER = 15,  // Tell the client the winner
+	SHOW_HANDS = 16  // Tell the client all the player's hands
 };
 
 namespace HuskyHoldEm
