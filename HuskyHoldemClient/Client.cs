@@ -347,6 +347,16 @@ namespace HuskyHoldemClient
 						string message = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
 						Console.WriteLine(message);
 						break;
+					case Command.SHOW_HANDS:
+						List<KeyValuePair<string, List<Card>>> players = JsonConvert.DeserializeObject<List<KeyValuePair<string, List<Card>>>>(packet.DataToString()[0]);
+						foreach (KeyValuePair<string, List<Card>> player in players)
+						{
+							Console.Write(player.Key + " has ");
+							Hand playerHand = new Hand(player.Value);
+							playerHand.ShowHand();
+							Console.WriteLine();
+						}
+						break;
 					case Command.ANNOUCE_WINNER:
 						string winnerName = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
 						List<Card> winnerCards = JsonConvert.DeserializeObject<List<Card>>(packet.DataToString()[1]);

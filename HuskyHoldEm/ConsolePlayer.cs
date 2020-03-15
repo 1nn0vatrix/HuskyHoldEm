@@ -44,6 +44,16 @@ namespace HuskyHoldEm
 			Console.WriteLine(message);
 		}
 
+		public void ShowHands(List<IPlayer> players)
+		{
+			foreach (IPlayer player in players)
+			{
+				Console.Write(player.Name + " has ");
+				player.Hand.ShowHand();
+				Console.WriteLine();
+			}
+		}
+
 		public void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings)
 		{
 			Console.Write($"The winner is... {winnerName}! Their winning hand is ");

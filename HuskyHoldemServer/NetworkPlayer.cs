@@ -58,6 +58,17 @@ namespace HuskyHoldemServer
 			WritePacket(RequestHandler.Socket, jsonResponse);
 		}
 
+		public void ShowHands(List<IPlayer> players)
+		{
+			List<KeyValuePair<string,List<Card>>> playerHands = new List<KeyValuePair<string, List<Card>>>();
+			foreach (IPlayer player in players)
+			{
+				playerHands.Add(new KeyValuePair<string, List<Card>>(player.Name, player.Hand.GetCards()));
+			}
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_HANDS, true, new List<object>() { playerHands }));
+			WritePacket(RequestHandler.Socket, jsonResponse);
+		}
+
 		public void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings)
 		{
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.ANNOUCE_WINNER, true, new List<object>() { winnerName, winnerHand.GetCards(), winnerWinnings }));

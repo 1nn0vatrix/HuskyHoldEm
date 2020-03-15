@@ -34,7 +34,9 @@ public enum Command
 	
 	ADJUST_CHIPS = 17, // Make the client update their chip count
 
-	ANNOUCE_WINNER = 18  // Tell the client the winner
+	ANNOUCE_WINNER = 18,  // Tell the client the winner
+
+	SHOW_HANDS = 19  // Tell the client all the player's hands
 };
 
 namespace HuskyHoldEm

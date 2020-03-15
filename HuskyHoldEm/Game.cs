@@ -129,6 +129,12 @@ namespace HuskyHoldEm
 				}
 			}
 
+			// Display everyone's hands.
+			foreach (IPlayer player in IPlayerList)
+			{
+				player.ShowHands(IPlayerList);
+			}
+
 			// Get the winner. 
 			IPlayer winner = GetWinner()[0];
 			winner.AdjustChips(pot);

@@ -29,6 +29,9 @@ namespace HuskyHoldEm
 		// Send the player a message
 		void SendMessage(string message);
 
+		// Send the player all the player names and their hands
+		void ShowHands(List<IPlayer> players);
+
 		// Display the winner
 		void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings);
 	}
