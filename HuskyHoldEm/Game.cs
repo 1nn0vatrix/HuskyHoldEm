@@ -51,7 +51,9 @@ namespace HuskyHoldEm
 					playersStayed[player] = false;
 					playersCurrentPayments[player] = 0;
 
-					player.SendMessage($"\nRound {round + 1}: Handing out cards...");
+					string roundTitle = round < 3 ? $"Round {round + 1}" : "Final round";
+
+					player.SendMessage("\n" + roundTitle + "! Handing out cards...");
 
 					// If the round is the starting round, be sure to collect their ante.
 					if (round == 0)
