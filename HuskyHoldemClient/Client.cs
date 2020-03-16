@@ -84,14 +84,7 @@ namespace HuskyHoldemClient
 							CreateGame();
 							break;
 						case Command.CLOSE_SOCKET:
-							string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
-							WritePacket(socket, jsonRequest);
-							Packet packet = ReadPacket(socket);
-							if (!packet.Success)
-							{
-								DebugUtils.WriteLine("[CLIENT] Error in closing socket connection");
-								break;
-							}
+							CloseSocket();
 							return;
 					}
 				}
@@ -260,6 +253,12 @@ namespace HuskyHoldemClient
 				Console.WriteLine("You are not registered");
 				return;
 			}
+			else if (Player.Chips <= 1)
+			{
+				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
+				CloseSocket();
+				return;
+			}
 
 			List<int> gameList = ShowGames();
 			if (gameList == null)
@@ -312,6 +311,13 @@ namespace HuskyHoldemClient
 				Console.WriteLine("You are not registered");
 				return;
 			}
+			else if (Player.Chips <= 1)
+			{
+				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
+				CloseSocket();
+				return;
+			}
+
 			int numberOfPlayers;
 			do
 			{
@@ -339,6 +345,20 @@ namespace HuskyHoldemClient
 			{
 				Console.WriteLine("Starting game!");
 				GameLoop();
+			}
+		}
+
+		private void CloseSocket()
+		{
+			Player = null;
+			
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
+			WritePacket(socket, jsonRequest);
+			
+			Packet packet = ReadPacket(socket);
+			if (!packet.Success)
+			{
+				DebugUtils.WriteLine("[CLIENT] Error in closing socket connection");
 			}
 		}
 
