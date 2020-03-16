@@ -10,6 +10,7 @@ namespace HuskyHoldemClient
 	{
 		public static void Main(string[] args)
 		{
+			Console.SetWindowSize(80,25);
 			Client client = new Client();
 			client.Run();
 		}
