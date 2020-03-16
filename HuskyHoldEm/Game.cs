@@ -45,6 +45,12 @@ namespace HuskyHoldEm
 
 			for (int round = 0; round < 4; round++)
 			{
+				// Set the absolute maximum that can be bet for the round based on the player with the lowest coins
+				int absoluteMaximum = int.MaxValue;
+
+				// Reset each player to not being stayed and their round's payments to zero.
+				// Check for the absolute maximum that can be bet.
+				// Give players cards
 				foreach (IPlayer player in IPlayerList)
 				{
 					// Reset which players have stayed and what they're paying for this round.
@@ -67,13 +73,18 @@ namespace HuskyHoldEm
 					{
 						player.GiveCard(deck.GetCard());
 					}
+
+					if (player.Chips < absoluteMaximum)
+					{
+						absoluteMaximum = player.Chips;
+					}
 				}
 
 				// Initialize the round's player loop variables
 				bool isRoundDone = false;
 				IPlayer maxBetter = null;
 				int playerIndex = 0;
-				int maxBet = 0;
+				int currentMaxBet = 0;
 
 				while (!isRoundDone)
 				{
@@ -87,10 +98,22 @@ namespace HuskyHoldEm
 						return;
 					}
 
+					// Check if everyone stayed except for the current max better, if so, we can move on to the next round.
 					if (!playersStayed.Where(p => p.Key != maxBetter).Any(p => p.Value == false))
 					{
 						isRoundDone = true;
 						break;
+					}
+
+					// Makes sure to update the absolute maximum incase the lowest player bet more chips
+					// Reset it to maximum value, in case the lowest player folded and there can be a bigger absolute maximum
+					absoluteMaximum = int.MaxValue;
+					foreach (IPlayer player in IPlayerList)
+					{
+						if (player.Chips < absoluteMaximum)
+						{
+							absoluteMaximum = player.Chips;
+						}
 					}
 
 					IPlayer currentPlayer = IPlayerList[playerIndex];
@@ -101,21 +124,27 @@ namespace HuskyHoldEm
 							player.SendMessage($"It's {currentPlayer.Name}'s turn now.");
 					}
 
-					currentPlayer.SendMessage($"Max bet for this round is currently {maxBet} chips.");
+					string maxBetRound = $"The maximum bet for this round is currently {currentMaxBet} chips.";
+					string absMaxBet = $"The maximum bet for the game is {absoluteMaximum} chips.";
 
-					// Check that the player has enough chips to keep playing
-					// If not, set that to -2 as a special fold flag.
-					int playerChoice = (maxBet > playersCurrentPayments[currentPlayer] + currentPlayer.Chips && playersStayed[currentPlayer] == false) ? -2 : currentPlayer.GetChoice();
+					currentPlayer.SendMessage($"{maxBetRound}\n{absMaxBet}");
 
-					if (playerChoice != -2)
+					int playerChoice = currentPlayer.GetChoice();
+
+					if (playerChoice > 0)
 					{
 						bool isValidChoice = false;
 						// Ensure they can actually raise by what they claim.
 						while (!isValidChoice)
 						{
-							if (playerChoice + maxBet > currentPlayer.Chips + playersCurrentPayments[currentPlayer])
+							if (playerChoice + currentMaxBet > currentPlayer.Chips + playersCurrentPayments[currentPlayer])
 							{
-								currentPlayer.SendMessage($"You can't raise for more than what you have plus what's currently bet! Try again.\nMax bet for this round is currently {maxBet} chips.");
+								currentPlayer.SendMessage($"You can't raise for more than what you have plus what's currently bet! Try again.\n{maxBetRound}\n{absMaxBet}");
+								playerChoice = currentPlayer.GetChoice();
+							}
+							else if (playerChoice > absoluteMaximum)
+							{
+								currentPlayer.SendMessage($"You can't raise for more than the absolute maximum so all players can play! Try again.\n{maxBetRound}\n{absMaxBet}");
 								playerChoice = currentPlayer.GetChoice();
 							}
 							else
@@ -127,11 +156,6 @@ namespace HuskyHoldEm
 
 					if (playerChoice < 0)
 					{
-						if (playerChoice == -2)
-						{
-							currentPlayer.RemovePlayer("You don't have enough to continue playing... bye!");
-						}
-
 						// Player folds
 						foreach (IPlayer player in IPlayerList)
 						{
@@ -181,7 +205,7 @@ namespace HuskyHoldEm
 						// Player raises
 						playersStayed[currentPlayer] = false;
 						maxBetter = currentPlayer;
-						maxBet += playerChoice;
+						currentMaxBet += playerChoice;
 
 						// Reset the stayed players, they must all agree to stay again
 						foreach (IPlayer player in IPlayerList)
@@ -191,7 +215,7 @@ namespace HuskyHoldEm
 					}
 
 					// Calculate what the player owes, have them pay, and update the pot.
-					int playerOwes = maxBet - playersCurrentPayments[currentPlayer];
+					int playerOwes = currentMaxBet - playersCurrentPayments[currentPlayer];
 					currentPlayer.AdjustChips(playerOwes * -1);
 					pot += playerOwes;
 					playersCurrentPayments[currentPlayer] += playerOwes;
