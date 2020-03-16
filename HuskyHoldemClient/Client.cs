@@ -25,52 +25,7 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
-				WebClient client = new WebClient();
-				String content;
-
-				using (Stream stream = client.OpenRead("http://anyabiryukova.github.io/huskyholdemserver.txt"))
-				{
-					StreamReader reader = new StreamReader(stream);
-					content = reader.ReadToEnd();
-				}
-
-				List<String> availableServers = content.Split('\n').ToList();
-
-				TcpClient tcpClient = new TcpClient();
-
-				foreach (string server in availableServers)
-				{
-					// Attempt to connect to the servers
-					DebugUtils.WriteLine($"[CLIENT] Connecting to {server}...");
-					tcpClient.ConnectAsync(server, port).Wait(1000);
-					if (!tcpClient.Connected)
-					{
-						DebugUtils.WriteLine($"[CLIENT] Could not connect to server {server}...");
-						tcpClient.Close();
-						tcpClient = new TcpClient();
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				if (!tcpClient.Connected)
-				{
-					Console.Write("\nCould not connect to any established servers.\nEnter IP address of server you wish to connect to: ");
-					try
-					{
-						hostIP = Console.ReadLine().Trim();
-					}
-					catch (Exception) { }
-
-					// Connect to the given server
-					tcpClient.Connect(hostIP, port);
-				}
-
-				socket = tcpClient.Client;
-
-				DebugUtils.WriteLine("[CLIENT] Connection accepted");
+				ConnectToServers();
 
 				MenuUtils.ShowUnregisteredMenu();
 
@@ -117,6 +72,56 @@ namespace HuskyHoldemClient
 				Console.WriteLine($"[!] Error {e.GetType().Name}\n {e.StackTrace} \nPress any key to exit...");
 				Console.ReadLine();
 			}
+		}
+
+		private void ConnectToServers()
+		{
+			WebClient client = new WebClient();
+			String content;
+
+			using (Stream stream = client.OpenRead("http://anyabiryukova.github.io/huskyholdemserver.txt"))
+			{
+				StreamReader reader = new StreamReader(stream);
+				content = reader.ReadToEnd();
+			}
+
+			List<String> availableServers = content.Split('\n').ToList();
+
+			TcpClient tcpClient = new TcpClient();
+
+			foreach (string server in availableServers)
+			{
+				// Attempt to connect to the servers
+				DebugUtils.WriteLine($"[CLIENT] Connecting to {server}...");
+				tcpClient.ConnectAsync(server, port).Wait(1000);
+				if (!tcpClient.Connected)
+				{
+					DebugUtils.WriteLine($"[CLIENT] Could not connect to server {server}...");
+					tcpClient.Close();
+					tcpClient = new TcpClient();
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (!tcpClient.Connected)
+			{
+				Console.Write("\nCould not connect to any established servers.\nEnter IP address of server you wish to connect to: ");
+				try
+				{
+					hostIP = Console.ReadLine().Trim();
+				}
+				catch (Exception) { }
+
+				// Connect to the given server
+				tcpClient.Connect(hostIP, port);
+			}
+
+			socket = tcpClient.Client;
+
+			DebugUtils.WriteLine("[CLIENT] Connection accepted");
 		}
 
 		/**
