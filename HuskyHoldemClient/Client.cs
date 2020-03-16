@@ -115,7 +115,10 @@ namespace HuskyHoldemClient
 				{
 					selection = int.Parse(Console.ReadLine().Trim());
 				}
-				catch (Exception) { }
+				catch (Exception)
+				{
+					selection = -1;
+				}
 			}
 			while (selection < 0 || selection > Enum.GetValues(typeof(Command)).Length);
 
@@ -124,6 +127,12 @@ namespace HuskyHoldemClient
 
 		private void RegisterUser()
 		{
+			if (Player != null)
+			{
+				Console.WriteLine("You are already registered");
+				return;
+			}
+
 			string username;
 			do
 			{
@@ -143,19 +152,25 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			if (!packet.Success)
-			{
-				Console.WriteLine("You are already registered");
-			}
-			else
+			if (packet.Success)
 			{
 				Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
 				DebugUtils.WriteLine("[CLIENT] Player successfully registered");
+			}
+			else
+			{
+				DebugUtils.WriteLine("[CLIENT] Error in registering a user");
 			}
 		}
 
 		private void ChangeName()
 		{
+			if (Player == null)
+			{
+				Console.WriteLine("You are not registered");
+				return;
+			}
+			
 			string username;
 			do
 			{
@@ -175,30 +190,38 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			if (!packet.Success)
+			if (packet.Success)
+			{
+				Player.Name = username;
+				DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
+			}
+			else
+			{
+				DebugUtils.WriteLine("[CLIENT] Error in changing a user's username");
+			}
+		}
+
+		private void UnregisterUser()
+		{
+			if (Player == null)
 			{
 				Console.WriteLine("You are not registered");
 				return;
 			}
 
-			Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
-			DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
-		}
-
-		private void UnregisterUser()
-		{
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.UNREGISTER_USER, true));
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			if (!packet.Success)
+			if (packet.Success)
 			{
-				DebugUtils.WriteLine("[CLIENT] Error in deactivating the user");
-				return;
+				Player = null;
+				DebugUtils.WriteLine("[CLIENT] Account Deactivated");
 			}
-
-			Player = null;
-			DebugUtils.WriteLine("[CLIENT] Account Deactivated");
+			else
+			{
+				DebugUtils.WriteLine("[CLIENT] Error in deactivating a user's account");
+			}
 		}
 
 		private List<int> ShowGames()

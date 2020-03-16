@@ -141,7 +141,7 @@ namespace HuskyHoldemServer
 			}
 
 			player.Name = username;
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true, new List<object>() { player }));
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CHANGE_NAME, true));
 			WritePacket(Socket, jsonResponse);
 		}
 
