@@ -34,7 +34,6 @@ namespace HuskyHoldemClient
 			+ "4. Show Games\n"
 			+ "5. Join Game\n"
 			+ "6. Create Game\n"
-			+ "0. Cheat Code\n"
 			+ "-1. Exit";
 
 		Player Player { get; set; }
