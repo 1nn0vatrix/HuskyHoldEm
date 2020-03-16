@@ -5,6 +5,8 @@ using HuskyHoldEm;
 using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Net;
+using System.IO;
 
 namespace HuskyHoldemClient
 {
@@ -42,19 +44,51 @@ namespace HuskyHoldemClient
 		{
 			try
 			{
-				Console.Write("\nEnter IP address of server you wish to connect to: ");
-				try
+				WebClient client = new WebClient();
+				String content;
+
+				using (Stream stream = client.OpenRead("http://anyabiryukova.github.io/huskyholdemserver.txt"))
 				{
-					hostIP = Console.ReadLine().Trim();
+					StreamReader reader = new StreamReader(stream);
+					content = reader.ReadToEnd();
 				}
-				catch (Exception) { }
 
-				DebugUtils.WriteLine("[CLIENT] Connecting to server...");
+				List<String> availableServers = content.Split('\n').ToList();
 
-				// connect to the server
 				TcpClient tcpClient = new TcpClient();
-				tcpClient.Connect(hostIP, port);
+
+				foreach (string server in availableServers)
+				{
+					// Attempt to connect to the servers
+					DebugUtils.WriteLine($"[CLIENT] Connecting to {server}...");
+					tcpClient.ConnectAsync(server, port).Wait(1000);
+					if (!tcpClient.Connected)
+					{
+						DebugUtils.WriteLine($"[CLIENT] Could not connect to server {server}...");
+						tcpClient.Close();
+						tcpClient = new TcpClient();
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if (!tcpClient.Connected)
+				{
+					Console.Write("\nCould not connect to any established servers.\nEnter IP address of server you wish to connect to: ");
+					try
+					{
+						hostIP = Console.ReadLine().Trim();
+					}
+					catch (Exception) { }
+
+					// Connect to the given server
+					tcpClient.Connect(hostIP, port);
+				}
+
 				socket = tcpClient.Client;
+
 				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
 				Console.WriteLine(MENU);
