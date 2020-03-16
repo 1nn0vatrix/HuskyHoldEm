@@ -255,7 +255,7 @@ namespace HuskyHoldemClient
 			}
 			else if (Player.Chips <= 1)
 			{
-				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
+				Console.WriteLine("You don't have enough chips to play");
 				return;
 			}
 
@@ -312,7 +312,7 @@ namespace HuskyHoldemClient
 			}
 			else if (Player.Chips <= 1)
 			{
-				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
+				Console.WriteLine("You don't have enough chips to play");
 				return;
 			}
 
