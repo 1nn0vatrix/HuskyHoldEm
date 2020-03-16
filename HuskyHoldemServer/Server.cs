@@ -233,7 +233,14 @@ namespace HuskyHoldemServer
 				return;
 			}
 
-			networkPlayer.AdjustChips(coins);
+			if (networkPlayer.Chips < 2)
+			{
+				networkPlayer.AdjustChips(coins);
+			}
+			else
+			{
+				SendError(Socket, Command.CHEAT_CODE, "You need less than two chips for this code to work.");
+			}
 		}
 
 		private void StartGameThread(Game game)

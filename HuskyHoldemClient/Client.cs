@@ -353,7 +353,7 @@ namespace HuskyHoldemClient
 		{
 			if (Player == null)
 			{
-				Console.WriteLine("You are not registered");
+				Console.WriteLine("You are not registered.");
 				return;
 			}
 
@@ -374,12 +374,12 @@ namespace HuskyHoldemClient
 				}
 				else
 				{
-					DebugUtils.WriteLine("[CLIENT] Cheat Code Failed");
+					Console.WriteLine("You need less than two chips for this cheat code to work.");
 				}
 				return;
 			}
 
-			Console.WriteLine("Invalid Cheat Code.");
+			Console.WriteLine("Invalid cheat code.");
 		}
 
 		private void CloseSocket()
