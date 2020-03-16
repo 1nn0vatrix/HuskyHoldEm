@@ -14,10 +14,10 @@ namespace HuskyHoldEm
 
 		public Hand Hand { get; } = new Hand();
 
-		public ConsolePlayer(string name)
+		public ConsolePlayer(string name, int chips = 50)
 		{
 			Name = name;
-			Chips = 50;
+			Chips = chips;
 		}
 
 		public int GetChoice()
