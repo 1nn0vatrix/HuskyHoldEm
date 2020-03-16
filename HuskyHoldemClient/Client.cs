@@ -19,21 +19,6 @@ namespace HuskyHoldemClient
 		private int port = 26795;
 		private Socket socket;
 
-		private const string MENU_WELCOME = "Welcome to Husky Hold'Em!\n";
-
-		// This is updated whenever ShowRegisteredMenu() is called.
-		private string MENU_CUSTOM_WELCOME = "Hello, {Player.Name}, you have {Player.Chips} chips!\n";
-
-		private const string MENU_PROMPT = "Please pick from the following options:\n";
-
-		private const string MENU_REGISTER = "1. Register\n";
-		private const string MENU_CHANGE_USER = "2. Change Username\n";
-		private const string MENU_UNREGISTER = "3. Unregister\n";
-		private const string MENU_SHOW_GAMES = "4. Show Games\n";
-		private const string MENU_JOIN_GAME = "5. Join Game\n";
-		private const string MENU_CREATE_GAME = "6. Create Game\n";
-		private const string MENU_EXIT = "-1. Exit";
-
 		ClientPlayer Player { get; set; }
 
 		public void Run()
@@ -87,7 +72,7 @@ namespace HuskyHoldemClient
 
 				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
-				ShowUnregisteredMenu();
+				MenuUtils.ShowUnregisteredMenu();
 
 				while (true)
 				{
@@ -182,7 +167,7 @@ namespace HuskyHoldemClient
 			{
 				Player = JsonConvert.DeserializeObject<ClientPlayer>(packet.DataToString()[0]);
 				DebugUtils.WriteLine("[CLIENT] Player successfully registered");
-				ShowRegisteredMenu();
+				MenuUtils.ShowRegisteredMenu(Player);
 			}
 			else
 			{
@@ -244,7 +229,7 @@ namespace HuskyHoldemClient
 			{
 				Player = null;
 				DebugUtils.WriteLine("[CLIENT] Account Deactivated");
-				ShowUnregisteredMenu();
+				MenuUtils.ShowUnregisteredMenu();
 			}
 			else
 			{
@@ -567,28 +552,7 @@ namespace HuskyHoldemClient
 				}
 			}
 			Console.WriteLine();
-			ShowRegisteredMenu();
-		}
-
-		void ShowUnregisteredMenu()
-		{
-			Console.WriteLine(MENU_WELCOME);
-			MenuArt.ShowColoredArt();
-			Console.WriteLine(MENU_PROMPT + MENU_REGISTER + MENU_EXIT);
-		}
-
-		void ShowRegisteredMenu()
-		{
-			SetCustomWelcome();
-			Console.WriteLine(MENU_CUSTOM_WELCOME);
-			MenuArt.ShowColoredArt();
-			Console.WriteLine(MENU_PROMPT + MENU_CHANGE_USER + MENU_UNREGISTER + MENU_SHOW_GAMES + MENU_JOIN_GAME + MENU_CREATE_GAME + MENU_EXIT);
-
-		}
-
-		void SetCustomWelcome()
-		{
-			MENU_CUSTOM_WELCOME = $"Hello, {Player.Name}, you have {Player.Chips} chips!\n";
+			MenuUtils.ShowRegisteredMenu(Player);
 		}
 	}
 }
