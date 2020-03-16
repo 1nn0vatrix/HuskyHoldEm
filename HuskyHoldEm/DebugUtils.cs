@@ -12,14 +12,18 @@ namespace HuskyHoldEm
 		[System.Diagnostics.Conditional("DEBUG")]
 		public static void WriteLine(string message = "\n")
 		{
+			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.WriteLine(message);
+			Console.ResetColor();
 		}
 
 		// Only displays the Console.Write if the build is in Debug mode
 		[System.Diagnostics.Conditional("DEBUG")]
 		public static void Write(string message)
 		{
+			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.Write(message);
+			Console.ResetColor();
 		}
 	}
 }
