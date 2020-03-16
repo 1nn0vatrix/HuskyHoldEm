@@ -41,6 +41,7 @@ namespace HuskyHoldEm
 			{
 				playersStayed.Add(player, false);
 				playersCurrentPayments.Add(player, 0);
+				player.Hand.ClearHand();
 			}
 
 			for (int round = 0; round < 4; round++)
