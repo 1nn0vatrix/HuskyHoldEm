@@ -1,4 +1,4 @@
-# CSS432_20W_0x878470 Final Project
+# Team 0x878470 Final Project - Husky Hold 'Em
 ## University of Washington Bothell - CSS 432 Final Project
 Anya Biryukova, Jenna Martin, and Brian Tang
 ___
