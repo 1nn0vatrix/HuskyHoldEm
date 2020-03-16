@@ -49,13 +49,16 @@ namespace HuskyHoldemServer
 					// Client disconnected, remove them from any games.
 					if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
 					{
-						foreach (Game game in Server.gameList)
+						lock (Server.gameList)
 						{
-							if (game.IPlayerList.Contains(player))
+							foreach (Game game in Server.gameList)
 							{
-								game.IPlayerList.Remove(player);
-								PacketQueue.Add(new Packet(Command.SEND_MOVE, false, new List<object>() { -1 }));
-							}
+								if (game.IPlayerList.Contains(player))
+								{
+									game.IPlayerList.Remove(player);
+									PacketQueue.Add(new Packet(Command.SEND_MOVE, false, new List<object>() { -1 }));
+								}
+							} 
 						}
 						Server.playerMap.Remove(Socket);
 					}
@@ -165,45 +168,51 @@ namespace HuskyHoldemServer
 
 		private void ShowGames()
 		{
-			List<int> availableGames = new List<int>();
-			List<string> playerCounts = new List<string>();
-			for (int i = 0; i < Server.gameList.Count; i++)
+			lock (Server.gameList)
 			{
-				if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Server.gameList[i].MaxPlayers)
+				List<int> availableGames = new List<int>();
+				List<string> playerCounts = new List<string>();
+				for (int i = 0; i < Server.gameList.Count; i++)
 				{
-					availableGames.Add(i);
-					playerCounts.Add(Server.gameList[i].IPlayerList.Count + "/" + Server.gameList[i].MaxPlayers);
+					if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Server.gameList[i].MaxPlayers)
+					{
+						availableGames.Add(i);
+						playerCounts.Add(Server.gameList[i].IPlayerList.Count + "/" + Server.gameList[i].MaxPlayers);
+					}
 				}
+				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { availableGames, playerCounts }));
+				WritePacket(Socket, jsonResponse);
 			}
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { availableGames, playerCounts }));
-			WritePacket(Socket, jsonResponse);
 		}
 
 		private void JoinGame(int gameIndex)
 		{
-			if (gameIndex < 0 || gameIndex >= Server.gameList.Count || Server.gameList[gameIndex].InProgress)
+			lock (Server.gameList)
 			{
-				SendError(Socket, Command.JOIN_GAME, "Invalid Parameters.");
-				return;
-			}
-
-			if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
-			{
-				Server.gameList[gameIndex].IPlayerList.Add(player);
-				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
-				WritePacket(Socket, jsonResponse);
-
-				if (Server.gameList[gameIndex].IPlayerList.Count == Server.gameList[gameIndex].MaxPlayers)
+				if (gameIndex < 0 || gameIndex >= Server.gameList.Count || Server.gameList[gameIndex].InProgress)
 				{
-					DebugUtils.WriteLine($"[SERVER] Got {Server.gameList[gameIndex].MaxPlayers} players, starting a game.");
-					jsonResponse = JsonConvert.SerializeObject(new Packet(Command.START_GAME, true));
-					foreach (NetworkPlayer np in Server.gameList[gameIndex].IPlayerList)
-					{
-						WritePacket(np.RequestHandler.Socket, jsonResponse);
-					}
-					StartGameThread(Server.gameList[gameIndex]);
+					SendError(Socket, Command.JOIN_GAME, "Invalid Parameters.");
+					return;
 				}
-				return;
+
+				if (Server.playerMap.TryGetValue(Socket, out NetworkPlayer player))
+				{
+					Server.gameList[gameIndex].IPlayerList.Add(player);
+					string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.JOIN_GAME, true));
+					WritePacket(Socket, jsonResponse);
+
+					if (Server.gameList[gameIndex].IPlayerList.Count == Server.gameList[gameIndex].MaxPlayers)
+					{
+						DebugUtils.WriteLine($"[SERVER] Got {Server.gameList[gameIndex].MaxPlayers} players, starting a game.");
+						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.START_GAME, true));
+						foreach (NetworkPlayer np in Server.gameList[gameIndex].IPlayerList)
+						{
+							WritePacket(np.RequestHandler.Socket, jsonResponse);
+						}
+						StartGameThread(Server.gameList[gameIndex]);
+					}
+					return;
+				} 
 			}
 
 			SendError(Socket, Command.JOIN_GAME, "Player not registered");
@@ -215,7 +224,11 @@ namespace HuskyHoldemServer
 			{
 				Game game = new Game(new List<IPlayer>(), numberOfPlayers);
 				game.IPlayerList.Add(player);
-				Server.gameList.Add(game);
+
+				lock (Server.gameList)
+				{
+					Server.gameList.Add(game); 
+				}
 
 				string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CREATE_GAME, true));
 				WritePacket(Socket, jsonResponse);
@@ -261,12 +274,15 @@ namespace HuskyHoldemServer
 		// Removes the game from the game list and checks if the leaderboard needs to be updated.
 		private void GameFinished(Game finishedGame, IPlayer winner)
 		{
-			DebugUtils.WriteLine($"[SERVER] GameId {Server.gameList.IndexOf(finishedGame)} finished.");
-			if (winner.Chips > Server.biggestWinner.Value)
+			lock (Server.gameList)
 			{
-				Server.biggestWinner = new KeyValuePair<string, int>(winner.Name, winner.Chips);
+				DebugUtils.WriteLine($"[SERVER] GameId {Server.gameList.IndexOf(finishedGame)} finished.");
+				if (winner.Chips > Server.biggestWinner.Value)
+				{
+					Server.biggestWinner = new KeyValuePair<string, int>(winner.Name, winner.Chips);
+				}
+				Server.gameList.Remove(finishedGame);
 			}
-			Server.gameList.Remove(finishedGame);
 		}
 	}
 
