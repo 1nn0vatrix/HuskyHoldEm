@@ -570,9 +570,6 @@ namespace HuskyHoldemClient
 						}
 
 						Console.WriteLine(winnerWinnings);
-
-						// Empty the player's hand for further games
-						Player.Hand.ClearHand();
 						isGameOngoing = false;
 						break;
 					case Command.REMOVE_PLAYER:
@@ -582,6 +579,8 @@ namespace HuskyHoldemClient
 						break;
 				}
 			}
+			// Empty the player's hand for further games
+			Player.Hand.ClearHand();
 			Console.WriteLine("\nPress any key to return to main menu.");
 			Console.ReadLine();
 			MenuUtils.ShowRegisteredMenu(Player);
