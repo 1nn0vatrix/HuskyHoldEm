@@ -19,24 +19,31 @@ namespace HuskyHoldemClient
 		private int port = 26795;
 		private Socket socket;
 
-		private const string MENU = "Welcome to Husky Hold'Em!\n" +
+		private const string MENU_WELCOME = "Welcome to Husky Hold'Em!\n";
+
+		// This is updated whenever ShowRegisteredMenu() is called.
+		private string MENU_CUSTOM_WELCOME = "Hello, {Player.Name}, you have {Player.Chips} chips!\n";
+
+		private const string MENU_ART = 
 			"  _____\n" +
 			" | A .  | _____\n" +
-			" |  /.\\ || A ^  | _____\n" + 
+			" |  /.\\ || A ^  | _____\n" +
 			" | (_._)||  / \\ || A _  | _____\n" +
-			" |   |  ||  \\ / ||  ( ) || A_ _ |\n" + 
+			" |   |  ||  \\ / ||  ( ) || A_ _ |\n" +
 			" | ____V||   .  || (_'_)|| ( v )|\n" +
-			"         | ____V||   |  ||  \\ / |\n" + 
+			"         | ____V||   |  ||  \\ / |\n" +
 			"                 | ____V||   .  |\n" +
-			"                         | ____V|\n\n"
-			+ "Please Pick from the following options:\n"
-			+ "1. Register\n"
-			+ "2. Change Username\n"
-			+ "3. Unregister\n"
-			+ "4. Show Games\n"
-			+ "5. Join Game\n"
-			+ "6. Create Game\n"
-			+ "-1. Exit";
+			"                         | ____V|\n\n";
+
+		private const string MENU_PROMPT = "Please pick from the following options:\n";
+
+		private const string MENU_REGISTER = "1. Register\n";
+		private const string MENU_CHANGE_USER = "2. Change Username\n";
+		private const string MENU_UNREGISTER = "3. Unregister\n";
+		private const string MENU_SHOW_GAMES = "4. Show Games\n";
+		private const string MENU_JOIN_GAME = "5. Join Game\n";
+		private const string MENU_CREATE_GAME = "6. Create Game\n";
+		private const string MENU_EXIT = "-1. Exit";
 
 		ClientPlayer Player { get; set; }
 
@@ -91,7 +98,7 @@ namespace HuskyHoldemClient
 
 				DebugUtils.WriteLine("[CLIENT] Connection accepted");
 
-				Console.WriteLine(MENU);
+				ShowUnregisteredMenu();
 
 				while (true)
 				{
@@ -186,6 +193,7 @@ namespace HuskyHoldemClient
 			{
 				Player = JsonConvert.DeserializeObject<ClientPlayer>(packet.DataToString()[0]);
 				DebugUtils.WriteLine("[CLIENT] Player successfully registered");
+				ShowRegisteredMenu();
 			}
 			else
 			{
@@ -247,6 +255,7 @@ namespace HuskyHoldemClient
 			{
 				Player = null;
 				DebugUtils.WriteLine("[CLIENT] Account Deactivated");
+				ShowUnregisteredMenu();
 			}
 			else
 			{
@@ -561,7 +570,24 @@ namespace HuskyHoldemClient
 						break;
 				}
 			}
-			Console.WriteLine("\n" + MENU);
+			Console.WriteLine();
+			ShowRegisteredMenu();
+		}
+
+		void ShowUnregisteredMenu()
+		{
+			Console.WriteLine(MENU_WELCOME + MENU_ART + MENU_PROMPT + MENU_REGISTER + MENU_EXIT);
+		}
+
+		void ShowRegisteredMenu()
+		{
+			SetCustomWelcome();
+			Console.WriteLine(MENU_CUSTOM_WELCOME + MENU_ART + MENU_PROMPT + MENU_CHANGE_USER + MENU_UNREGISTER + MENU_SHOW_GAMES + MENU_JOIN_GAME + MENU_CREATE_GAME + MENU_EXIT);
+		}
+
+		void SetCustomWelcome()
+		{
+			MENU_CUSTOM_WELCOME = $"Hello, {Player.Name}, you have {Player.Chips} chips!\n";
 		}
 	}
 }
