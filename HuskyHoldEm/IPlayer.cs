@@ -34,5 +34,8 @@ namespace HuskyHoldEm
 
 		// Display the winner
 		void AnnounceWinner(string winnerName, Hand winnerHand, string winnerWinnings);
+
+		// Remove the player from the game if they don't have enough chips
+		void RemovePlayer(string message);
 	}
 }

@@ -63,5 +63,10 @@ namespace HuskyHoldEm
 			}
 			Console.WriteLine(winnerWinnings);
 		}
+
+		public void RemovePlayer(string message)
+		{
+			Console.WriteLine(message);
+		}
 	}
 }

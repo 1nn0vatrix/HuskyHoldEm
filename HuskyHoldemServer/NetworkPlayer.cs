@@ -79,5 +79,11 @@ namespace HuskyHoldemServer
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.ANNOUCE_WINNER, true, new List<object>() { winnerName, winnerHand.GetCards(), winnerWinnings }));
 			WritePacket(RequestHandler.Socket, jsonResponse);
 		}
+
+		public void RemovePlayer(string message)
+		{
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REMOVE_PLAYER, true, new List<object>() { message }));
+			WritePacket(RequestHandler.Socket, jsonResponse);
+		}
 	}
 }

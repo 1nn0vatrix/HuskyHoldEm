@@ -100,10 +100,37 @@ namespace HuskyHoldEm
 							player.SendMessage($"It's {currentPlayer.Name}'s turn now.");
 					}
 
-					int playerChoice = currentPlayer.GetChoice();
+					currentPlayer.SendMessage($"Max bet for this round is currently {maxBet} chips.");
+
+					// Check that the player has enough chips to keep playing
+					// If not, set that to -2 as a special fold flag.
+					int playerChoice = (maxBet > playersCurrentPayments[currentPlayer] + currentPlayer.Chips && playersStayed[currentPlayer] == false) ? -2 : currentPlayer.GetChoice();
+
+					if (playerChoice != -2)
+					{
+						bool isValidChoice = false;
+						// Ensure they can actually raise by what they claim.
+						while (!isValidChoice)
+						{
+							if (playerChoice + maxBet > currentPlayer.Chips + playersCurrentPayments[currentPlayer])
+							{
+								currentPlayer.SendMessage($"You can't raise for more than what you have plus what's currently bet! Try again.\nMax bet for this round is currently {maxBet} chips.");
+								playerChoice = currentPlayer.GetChoice();
+							}
+							else
+							{
+								isValidChoice = true;
+							}
+						}
+					}
 
 					if (playerChoice < 0)
 					{
+						if (playerChoice == -2)
+						{
+							currentPlayer.RemovePlayer("You don't have enough to continue playing... bye!");
+						}
+
 						// Player folds
 						foreach (IPlayer player in IPlayerList)
 						{

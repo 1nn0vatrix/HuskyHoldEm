@@ -520,6 +520,11 @@ namespace HuskyHoldemClient
 						Player.Hand.ClearHand();
 						isGameOngoing = false;
 						break;
+					case Command.REMOVE_PLAYER:
+						string removeMessage = JsonConvert.DeserializeObject<string>(packet.DataToString()[0]);
+						Console.WriteLine(removeMessage);
+						isGameOngoing = false;
+						break;
 				}
 			}
 			Console.WriteLine("\n" + MENU);
