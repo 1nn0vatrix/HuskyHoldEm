@@ -214,7 +214,10 @@ namespace HuskyHoldEm
 
 			foreach (IPlayer player in IPlayerList)
 			{
-				player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {pot} chips, they now have {winner.Chips} chips.");
+				if (!player.Equals(winner))
+					player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {pot} chips, they now have {winner.Chips} chips.");
+				else
+					player.AnnounceWinner(winner.Name, winner.Hand, $"\nYou won the pot of {pot} chips! You now have {winner.Chips} chips.");
 			}
 		}		
 
