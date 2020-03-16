@@ -450,7 +450,7 @@ namespace HuskyHoldemClient
 
 						while (!isValidChoice)
 						{
-							Console.WriteLine("\nSTAY, FOLD, or RAISE? To RAISE type 'RAISE n' where n is the number you want to raise by.");
+							Console.WriteLine("\nSTAY, FOLD, or RAISE? \nTo RAISE type 'RAISE n' where n is the number you want to raise by.");
 							string input = Console.ReadLine().ToLower();
 
 							if (!String.IsNullOrEmpty(input))
