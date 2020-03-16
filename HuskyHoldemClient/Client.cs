@@ -445,6 +445,7 @@ namespace HuskyHoldemClient
 						break;
 				}
 			}
+			Console.WriteLine("\n" + MENU);
 		}
 	}
 }
