@@ -261,6 +261,7 @@ namespace HuskyHoldemClient
 			}
 
 			List<int> gameList = JsonConvert.DeserializeObject<List<int>>(packet.DataToString()[0]);
+			List<string> gamePlayerCount = JsonConvert.DeserializeObject<List<string>>(packet.DataToString()[1]);
 			Console.WriteLine("Games:");
 
 			if (gameList.Count == 0)
@@ -271,7 +272,7 @@ namespace HuskyHoldemClient
 
 			foreach (int gameId in gameList)
 			{
-				Console.WriteLine($"Game ID: {gameId}");
+				Console.WriteLine($"Game ID: {gameId}\t{gamePlayerCount[gameId]} players");
 			}
 
 			return gameList;

@@ -167,14 +167,16 @@ namespace HuskyHoldemServer
 			Server.gameList = Server.gameList.Except(completedGames).ToList();
 
 			List<int> availableGames = new List<int>();
+			List<string> playerCounts = new List<string>();
 			for (int i = 0; i < Server.gameList.Count; i++)
 			{
 				if (!Server.gameList[i].InProgress && Server.gameList[i].IPlayerList.Count < Server.gameList[i].MaxPlayers)
 				{
 					availableGames.Add(i);
+					playerCounts.Add(Server.gameList[i].IPlayerList.Count + "/" + Server.gameList[i].MaxPlayers);
 				}
 			}
-			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { availableGames }));
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES, true, new List<object>() { availableGames, playerCounts }));
 			WritePacket(Socket, jsonResponse);
 		}
 
