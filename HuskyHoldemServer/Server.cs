@@ -86,6 +86,9 @@ namespace HuskyHoldemServer
 					case Command.CREATE_GAME:
 						CreateGame(int.Parse(packet.DataList[0].ToString()));
 						break;
+					case Command.CHEAT_CODE:
+						CheatCode(int.Parse(packet.DataList[0].ToString()));
+						break;
 					case Command.CLOSE_SOCKET:
 						jsonResponse = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET, true, new List<object>() { "Goodbye!" }));
 						WritePacket(Socket, jsonResponse);
@@ -219,6 +222,18 @@ namespace HuskyHoldemServer
 			}
 
 			SendError(Socket, Command.CREATE_GAME, "Invalid parameters.");
+		}
+
+		private void CheatCode(int coins)
+		{
+			bool success = Server.playerMap.TryGetValue(Socket, out NetworkPlayer networkPlayer);
+			if (!success)
+			{
+				SendError(Socket, Command.CHEAT_CODE, "Invalid Parameters.");
+				return;
+			}
+
+			networkPlayer.AdjustChips(coins);
 		}
 
 		private void StartGameThread(Game game)

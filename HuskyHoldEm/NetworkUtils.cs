@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 
 public enum Command
 {
-	CLOSE_SOCKET = 0,
+	CLOSE_SOCKET = -1,
+	CHEAT_CODE = 0,
 
 	// Main menu user commands
 	REGISTER_USER = 1,

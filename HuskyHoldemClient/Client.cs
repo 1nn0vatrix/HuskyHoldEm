@@ -34,7 +34,8 @@ namespace HuskyHoldemClient
 			+ "4. Show Games\n"
 			+ "5. Join Game\n"
 			+ "6. Create Game\n"
-			+ "0. Exit\n";
+			+ "0. Cheat Code\n"
+			+ "-1. Exit";
 
 		Player Player { get; set; }
 
@@ -83,6 +84,9 @@ namespace HuskyHoldemClient
 						case Command.CREATE_GAME:
 							CreateGame();
 							break;
+						case Command.CHEAT_CODE:
+							CheatCode();
+							break;
 						case Command.CLOSE_SOCKET:
 							CloseSocket();
 							return;
@@ -110,10 +114,10 @@ namespace HuskyHoldemClient
 				}
 				catch (Exception)
 				{
-					selection = -1;
+					selection = int.MinValue;
 				}
 			}
-			while (selection < 0 || selection > Enum.GetValues(typeof(Command)).Length);
+			while (selection < -1 || selection > Enum.GetValues(typeof(Command)).Length);
 
 			return (Command)selection;
 		}
@@ -344,6 +348,39 @@ namespace HuskyHoldemClient
 				Console.WriteLine("Starting game!");
 				GameLoop();
 			}
+		}
+
+		private void CheatCode()
+		{
+			if (Player == null)
+			{
+				Console.WriteLine("You are not registered");
+				return;
+			}
+
+			Console.Write("Enter a cheat code: ");
+			string cheatCode = Console.ReadLine();
+
+			if (cheatCode.Equals("0x878470"))
+			{
+				string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CHEAT_CODE, true, new List<object>() { 50 }));
+				WritePacket(socket, jsonRequest);
+
+				Packet packet = ReadPacket(socket);
+				if (packet.Success)
+				{
+					Player.Chips += 50;
+					Console.WriteLine("CHEAT CODE USED. +50 CHIPS");
+					Console.WriteLine($"You now have {Player.Chips} chips");
+				}
+				else
+				{
+					DebugUtils.WriteLine("[CLIENT] Cheat Code Failed");
+				}
+				return;
+			}
+
+			Console.WriteLine("Invalid Cheat Code.");
 		}
 
 		private void CloseSocket()
