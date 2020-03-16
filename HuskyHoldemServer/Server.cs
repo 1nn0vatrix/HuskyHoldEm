@@ -165,10 +165,6 @@ namespace HuskyHoldemServer
 
 		private void ShowGames()
 		{
-			// Hacky fix to remove any finished games. 
-			List<Game> completedGames = Server.gameList.Where(game => game.GameFinished).ToList();
-			Server.gameList = Server.gameList.Except(completedGames).ToList();
-
 			List<int> availableGames = new List<int>();
 			List<string> playerCounts = new List<string>();
 			for (int i = 0; i < Server.gameList.Count; i++)
@@ -256,9 +252,21 @@ namespace HuskyHoldemServer
 
 		private void StartGameThread(Game game)
 		{
+			game.GameFinished += GameFinished;
 			Thread gameThread = new Thread(new ThreadStart(game.StartGame));
 			gameThread.IsBackground = true;
 			gameThread.Start();
+		}
+
+		// Removes the game from the game list and checks if the leaderboard needs to be updated.
+		private void GameFinished(Game finishedGame, IPlayer winner)
+		{
+			DebugUtils.WriteLine($"[SERVER] GameId {Server.gameList.IndexOf(finishedGame)} finished.");
+			if (winner.Chips > Server.biggestWinner.Value)
+			{
+				Server.biggestWinner = new KeyValuePair<string, int>(winner.Name, winner.Chips);
+			}
+			Server.gameList.Remove(finishedGame);
 		}
 	}
 

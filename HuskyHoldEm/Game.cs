@@ -11,9 +11,10 @@ namespace HuskyHoldEm
 		public int MaxPlayers { get; }
 		public List<IPlayer> IPlayerList { get; set; }
 		public bool InProgress { get; set; }
-		public bool GameFinished { get; set; }
 		private Deck deck;
 		private int pot = 0;
+
+		public event Action<Game, IPlayer> GameFinished;
 
 		public Game(List<IPlayer> players, int numberOfPlayers)
 		{
@@ -29,7 +30,6 @@ namespace HuskyHoldEm
 			InProgress = true;
 			GameLoop();
 			InProgress = false;
-			GameFinished = true;
 		}
 
 		public void GameLoop()
@@ -83,6 +83,7 @@ namespace HuskyHoldEm
 						IPlayer lonelyWinner = IPlayerList.First();
 						lonelyWinner.AdjustChips(pot);
 						lonelyWinner.AnnounceWinner(lonelyWinner.Name, lonelyWinner.Hand, $"\n{lonelyWinner.Name}, everyone folded! You win {pot} chips, and now have {lonelyWinner.Chips} chips.");
+						GameFinished?.Invoke(this, lonelyWinner);
 						return;
 					}
 
@@ -219,6 +220,8 @@ namespace HuskyHoldEm
 				else
 					player.AnnounceWinner(winner.Name, winner.Hand, $"\nYou won the pot of {pot} chips! You now have {winner.Chips} chips.");
 			}
+
+			GameFinished?.Invoke(this, winner);
 		}		
 
 		public List<IPlayer> GetWinner()
