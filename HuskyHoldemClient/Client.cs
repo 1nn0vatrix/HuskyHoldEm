@@ -107,9 +107,14 @@ namespace HuskyHoldemClient
 					}
 				}
 			}
+			catch (SocketException)
+			{
+				Console.WriteLine("Could not connect to any servers. Please try again later.");
+				Console.ReadLine();
+			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e.StackTrace} \nPress any key to exit...");
+				Console.WriteLine($"[!] Error {e.GetType().Name}\n {e.StackTrace} \nPress any key to exit...");
 				Console.ReadLine();
 			}
 		}
