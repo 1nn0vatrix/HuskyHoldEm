@@ -9,10 +9,10 @@ namespace HuskyHoldemClient
 {
 	public static class MenuUtils
 	{
-		private const string MENU_WELCOME = "Welcome to Husky Hold'Em!\n";
+		private const string MENU_WELCOME = "Welcome to Husky Hold'Em!";
 
 		// This is updated whenever ShowRegisteredMenu() is called.
-		private static string MENU_CUSTOM_WELCOME = "Hello, {Player.Name}, you have {Player.Chips} chips!\n";
+		private static string MENU_CUSTOM_WELCOME = "Hello, {Player.Name}, you have {Player.Chips} chips!";
 
 		private const string MENU_PROMPT = "Please pick from the following options:\n";
 
@@ -37,15 +37,15 @@ namespace HuskyHoldemClient
 
 		static string[] MENU_ART_ARR = new string[]
 		{
-			"  _____                          ",
-			" | A .  | _____                  ",
-			" |  /.\\ || A ^  | _____          ",
-			" | (_._)||  / \\ || A _  | _____  ",
-			" |   |  ||  \\ / ||  ( ) || A_ _ |",
-			" | ____V||   .  || (_'_)|| ( v )|",
-			"         | ____V||   |  ||  \\ / |",
-			"                 | ____V||   .  |",
-			"                         | ____V|"
+			"  _____                           ",
+			" | A .  | _____                   ",
+			" |  /.\\ || A ^  | _____           ",
+			" | (_._)||  / \\ || A _  | _____   ",
+			" |   |  ||  \\ / ||  ( ) || A_ _ | ",
+			" | ____V||   .  || (_'_)|| ( v )| ",
+			"         | ____V||   |  ||  \\ / | ",
+			"                 | ____V||   .  | ",
+			"                         | ____V|\n"
 		};
 
 		public static void ShowUnregisteredMenu()
@@ -57,7 +57,7 @@ namespace HuskyHoldemClient
 
 		public static void ShowRegisteredMenu(ClientPlayer player)
 		{
-			MENU_CUSTOM_WELCOME = $"Hello, {player.Name}, you have {player.Chips} chips!\n";
+			MENU_CUSTOM_WELCOME = $"Hello, {player.Name}, you have {player.Chips} chips!";
 			Console.WriteLine(MENU_CUSTOM_WELCOME);
 			MenuUtils.ShowColoredArt();
 			Console.WriteLine(MENU_PROMPT + MENU_CHANGE_USER + MENU_UNREGISTER + MENU_SHOW_GAMES + MENU_JOIN_GAME + MENU_CREATE_GAME + MENU_EXIT);
