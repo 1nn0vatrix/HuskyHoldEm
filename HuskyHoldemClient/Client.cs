@@ -31,7 +31,7 @@ namespace HuskyHoldemClient
 
 				while (true)
 				{
-					Command command = GetUserInput();
+					Command command = GetUserMenuInput();
 
 					switch (command)
 					{
@@ -127,12 +127,12 @@ namespace HuskyHoldemClient
 		/**
 		 * Prompts the user to select a menu option and returns the corresponding command
 		 */
-		private Command GetUserInput()
+		private Command GetUserMenuInput()
 		{
 			int selection = 0;
 			do
 			{
-				Console.Write("\nEnter an option: ");
+				Console.Write("\nEnter a menu option: ");
 				try
 				{
 					selection = int.Parse(Console.ReadLine().Trim());
