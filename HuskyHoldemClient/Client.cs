@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using HuskyHoldEm;
 using static HuskyHoldEm.NetworkUtils;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace HuskyHoldemClient
 {
@@ -114,10 +115,7 @@ namespace HuskyHoldemClient
 				{
 					selection = int.Parse(Console.ReadLine().Trim());
 				}
-				catch (Exception) 
-				{ 
-					selection = -1; // user input was not a number, re-prompt
-				}
+				catch (Exception) { }
 			}
 			while (selection < 0 || selection > Enum.GetValues(typeof(Command)).Length);
 
@@ -126,12 +124,6 @@ namespace HuskyHoldemClient
 
 		private void RegisterUser()
 		{
-			if (Player != null)
-			{
-				Console.WriteLine("You are already registered");
-				return;
-			}
-
 			string username;
 			do
 			{
@@ -164,12 +156,6 @@ namespace HuskyHoldemClient
 
 		private void ChangeName()
 		{
-			if (Player == null)
-			{
-				Console.WriteLine("You are not registered");
-				return;
-			}
-
 			string username;
 			do
 			{
@@ -195,7 +181,7 @@ namespace HuskyHoldemClient
 				return;
 			}
 
-			Player.Name = username;
+			Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
 			DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
 		}
 
@@ -347,53 +333,60 @@ namespace HuskyHoldemClient
 					case Command.REQUEST_MOVE:
 						Console.WriteLine($"{Player.Name}, you have {Player.Chips} chips...\nYour hand is:");
 						Player.Hand.ShowHand();
-						bool validChoice = false;
-						string playerChoice;
-						do
-						{
-							Console.WriteLine("\nSTAY, FOLD, or RAISE?");
-							playerChoice = Console.ReadLine().ToLower();
-							if(playerChoice.Equals("fold") || playerChoice.Equals("stay") || playerChoice.Equals("raise"))
-							{
-								validChoice = true;
-								break;
-							}
-							Console.WriteLine("Invalid call made - please choose from the following options:");
-							continue;
-						} while (!validChoice);
-						int choice;
-						switch (playerChoice)
-						{
-							case "fold":
-								choice = -1;
-								break;
-							case "stay":
-								choice = 0;
-								break;
-							default:
-								bool validBet = false;
-								do
-								{
-									Console.WriteLine("How much would you like to bet?");
-									choice = int.Parse(Console.ReadLine());
-									if (choice <= 0)
-									{
-										Console.WriteLine("...You must bet at least 1 chip.");
-										continue;
-									}
-									else if (choice > Player.Chips)
-									{
-										Console.WriteLine("... You have insufficient funds to place this bet, please try again.");
-										continue;
-									}
-									else
-									{
-										validBet = true;
-										break;
-									}
-								} while (!validBet);
-								break;
 
+						bool isValidChoice = false;
+						int choice = -1;
+						while (!isValidChoice)
+						{
+							Console.WriteLine("\nSTAY, FOLD, or RAISE? To RAISE type 'RAISE n' where n is the number you want to raise by.");
+							string input = Console.ReadLine().ToLower();
+
+							if (!String.IsNullOrEmpty(input))
+							{
+								List<string> stringTokens = input.Split(' ').ToList();
+								string playerChoice = stringTokens[0];
+								switch (playerChoice)
+								{
+									case "fold":
+										choice = -1;
+										isValidChoice = true;
+										break;
+									case "stay":
+										choice = 0;
+										isValidChoice = true;
+										break;
+									case "raise":
+										if (stringTokens.Count != 2)
+										{
+											Console.WriteLine("Please enter a valid number of chips.");
+											break;
+										}
+										try
+										{
+											choice = int.Parse(stringTokens[1]);
+										}
+										catch (Exception)
+										{
+											Console.WriteLine("Please enter a valid number of chips.");
+											break;
+										}
+										if (choice <= 0)
+										{
+											Console.WriteLine("You must bet at least 1 chip.");
+											break;
+										}
+										if (choice > Player.Chips)
+										{
+											Console.WriteLine("You have insufficient funds to place this bet, please try again.");
+											break;
+										}
+										isValidChoice = true;
+										break;
+									default:
+										Console.WriteLine("Invalid call made. Try again.");
+										break;
+								}
+							}
 						}
 
 						string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.SEND_MOVE, true, new List<object>() { choice }));
