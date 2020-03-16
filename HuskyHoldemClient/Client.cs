@@ -562,7 +562,8 @@ namespace HuskyHoldemClient
 						break;
 				}
 			}
-			Console.WriteLine();
+			Console.WriteLine("\nPress any key to return to main menu.");
+			Console.ReadLine();
 			MenuUtils.ShowRegisteredMenu(Player);
 		}
 	}
