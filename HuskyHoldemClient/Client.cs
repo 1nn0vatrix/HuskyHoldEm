@@ -109,7 +109,8 @@ namespace HuskyHoldemClient
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e.StackTrace}");
+				Console.WriteLine($"Error: {e.StackTrace} \nPress any key to exit...");
+				Console.ReadLine();
 			}
 		}
 
