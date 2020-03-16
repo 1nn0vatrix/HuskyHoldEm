@@ -256,7 +256,6 @@ namespace HuskyHoldemClient
 			else if (Player.Chips <= 1)
 			{
 				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
-				CloseSocket();
 				return;
 			}
 
@@ -314,7 +313,6 @@ namespace HuskyHoldemClient
 			else if (Player.Chips <= 1)
 			{
 				Console.WriteLine("You don't have enough chips to play. GAME OVER.");
-				CloseSocket();
 				return;
 			}
 
@@ -351,7 +349,7 @@ namespace HuskyHoldemClient
 		private void CloseSocket()
 		{
 			Player = null;
-			
+
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.CLOSE_SOCKET));
 			WritePacket(socket, jsonRequest);
 			
