@@ -440,11 +440,18 @@ namespace HuskyHoldemClient
 				switch (packet.Command)
 				{
 					case Command.REQUEST_MOVE:
+						// Clear any previous user input.
+						while (Console.KeyAvailable)
+						{
+							Console.ReadKey(false);
+						}
+
 						Console.WriteLine($"{Player.Name}, you have {Player.Chips} chips...\nYour hand is:");
 						Player.Hand.ShowHand();
 
 						bool isValidChoice = false;
 						int choice = -1;
+
 						while (!isValidChoice)
 						{
 							Console.WriteLine("\nSTAY, FOLD, or RAISE? To RAISE type 'RAISE n' where n is the number you want to raise by.");
