@@ -36,7 +36,7 @@ namespace HuskyHoldemClient
 			+ "6. Create Game\n"
 			+ "-1. Exit";
 
-		Player Player { get; set; }
+		ClientPlayer Player { get; set; }
 
 		public void Run()
 		{
@@ -150,7 +150,7 @@ namespace HuskyHoldemClient
 			Packet packet = ReadPacket(socket);
 			if (packet.Success)
 			{
-				Player = JsonConvert.DeserializeObject<Player>(packet.DataToString()[0]);
+				Player = JsonConvert.DeserializeObject<ClientPlayer>(packet.DataToString()[0]);
 				DebugUtils.WriteLine("[CLIENT] Player successfully registered");
 			}
 			else

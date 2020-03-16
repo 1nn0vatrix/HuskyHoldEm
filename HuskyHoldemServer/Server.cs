@@ -122,7 +122,7 @@ namespace HuskyHoldemServer
 			NetworkPlayer player = new NetworkPlayer(username, this);
 			Server.playerMap.Add(Socket, player);
 
-			Player clientPlayerObject = new Player(player.Name);
+			ClientPlayer clientPlayerObject = new ClientPlayer(player.Name);
 
 			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.REGISTER_USER, true, new List<object>() { clientPlayerObject }));
 			WritePacket(Socket, jsonResponse);
