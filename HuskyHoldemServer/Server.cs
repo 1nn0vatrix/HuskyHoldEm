@@ -86,6 +86,9 @@ namespace HuskyHoldemServer
 					case Command.CREATE_GAME:
 						CreateGame(int.Parse(packet.DataList[0].ToString()));
 						break;
+					case Command.VIEW_LEADERBOARD:
+						ViewLeaderboard();
+						break;
 					case Command.CHEAT_CODE:
 						CheatCode(int.Parse(packet.DataList[0].ToString()));
 						break;
@@ -226,6 +229,12 @@ namespace HuskyHoldemServer
 			SendError(Socket, Command.CREATE_GAME, "Invalid parameters.");
 		}
 
+		private void ViewLeaderboard()
+		{
+			string jsonResponse = JsonConvert.SerializeObject(new Packet(Command.VIEW_LEADERBOARD, true, new List<object>() { Server.biggestWinner }));
+			WritePacket(Socket, jsonResponse);
+		}
+
 		private void CheatCode(int coins)
 		{
 			bool success = Server.playerMap.TryGetValue(Socket, out NetworkPlayer networkPlayer);
@@ -264,6 +273,8 @@ namespace HuskyHoldemServer
 		public List<Socket> activeSockets = new List<Socket>();
 		public Dictionary<Socket, NetworkPlayer> playerMap = new Dictionary<Socket, NetworkPlayer>();
 		public List<Game> gameList = new List<Game>();
+
+		public KeyValuePair<string, int> biggestWinner = new KeyValuePair<string, int>("no one", 0);
 
 		public void Run()
 		{

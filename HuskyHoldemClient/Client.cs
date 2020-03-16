@@ -53,6 +53,9 @@ namespace HuskyHoldemClient
 						case Command.CREATE_GAME:
 							CreateGame();
 							break;
+						case Command.VIEW_LEADERBOARD:
+							ViewLeaderboard();
+							break;
 						case Command.CHEAT_CODE:
 							CheatCode();
 							break;
@@ -376,6 +379,22 @@ namespace HuskyHoldemClient
 				Console.WriteLine("Starting game!");
 				GameLoop();
 			}
+		}
+
+		void ViewLeaderboard()
+		{
+			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.VIEW_LEADERBOARD));
+			WritePacket(socket, jsonRequest);
+
+			Packet packet = ReadPacket(socket);
+			if (!packet.Success)
+			{
+				DebugUtils.WriteLine("[CLIENT] Error in showing leaderboard");
+				return;
+			}
+
+			KeyValuePair<string, int> winner = JsonConvert.DeserializeObject<KeyValuePair<string, int>>(packet.DataToString()[0]);
+			Console.WriteLine($"The biggest winner is {winner.Key} with {winner.Value} chips!");
 		}
 
 		private void CheatCode()

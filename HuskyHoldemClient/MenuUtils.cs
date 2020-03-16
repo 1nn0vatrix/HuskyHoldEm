@@ -22,6 +22,7 @@ namespace HuskyHoldemClient
 		private const string MENU_SHOW_GAMES = "4. Show Games\n";
 		private const string MENU_JOIN_GAME = "5. Join Game\n";
 		private const string MENU_CREATE_GAME = "6. Create Game\n";
+		private const string MENU_LEADERBOARD = "8. View Leaderboard\n";
 		private const string MENU_EXIT = "-1. Exit";
 
 		//static string MENU_ART = 
@@ -60,7 +61,7 @@ namespace HuskyHoldemClient
 			MENU_CUSTOM_WELCOME = $"Hello, {player.Name}, you have {player.Chips} chips!";
 			Console.WriteLine(MENU_CUSTOM_WELCOME);
 			MenuUtils.ShowColoredArt();
-			Console.WriteLine(MENU_PROMPT + MENU_CHANGE_USER + MENU_UNREGISTER + MENU_SHOW_GAMES + MENU_JOIN_GAME + MENU_CREATE_GAME + MENU_EXIT);
+			Console.WriteLine(MENU_PROMPT + MENU_CHANGE_USER + MENU_UNREGISTER + MENU_SHOW_GAMES + MENU_JOIN_GAME + MENU_CREATE_GAME + MENU_LEADERBOARD + MENU_EXIT);
 
 		}
 
