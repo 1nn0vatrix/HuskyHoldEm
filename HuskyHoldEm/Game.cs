@@ -14,6 +14,9 @@ namespace HuskyHoldEm
 		private Deck deck;
 		private int pot = 0;
 
+		Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
+		Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
+
 		public event Action<Game, IPlayer> GameFinished;
 
 		public Game(List<IPlayer> players, int numberOfPlayers)
@@ -28,15 +31,7 @@ namespace HuskyHoldEm
 		public void StartGame()
 		{
 			InProgress = true;
-			GameLoop();
-			InProgress = false;
-		}
 
-		public void GameLoop()
-		{
-			Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
-			Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
-			
 			foreach (IPlayer player in IPlayerList)
 			{
 				playersStayed.Add(player, false);
@@ -44,6 +39,20 @@ namespace HuskyHoldEm
 				player.Hand.ClearHand();
 			}
 
+			GameLoop();
+
+			InProgress = false;
+		}
+
+		// Remove disconnected players from game logic collections
+		public void RemovePlayer(IPlayer player)
+		{
+			playersStayed.Remove(player);
+			playersCurrentPayments.Remove(player);
+		}
+
+		public void GameLoop()
+		{
 			for (int round = 0; round < 4; round++)
 			{
 				// Set the absolute maximum that can be bet for the round based on the player with the lowest coins

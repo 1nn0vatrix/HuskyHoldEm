@@ -55,8 +55,8 @@ namespace HuskyHoldemServer
 							{
 								if (game.IPlayerList.Contains(player))
 								{
+									game.RemovePlayer(player);
 									game.IPlayerList.Remove(player);
-									PacketQueue.Add(new Packet(Command.SEND_MOVE, false, new List<object>() { -1 }));
 								}
 							} 
 						}
