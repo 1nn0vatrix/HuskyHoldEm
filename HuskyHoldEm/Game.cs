@@ -98,6 +98,18 @@ namespace HuskyHoldEm
 
 				while (!isRoundDone)
 				{
+					string remainingPlayers = "Remaining players: ";
+
+					foreach (IPlayer player in IPlayerList)
+					{
+						remainingPlayers += player.Name + " ";
+					}
+
+					foreach (IPlayer player in IPlayerList)
+					{
+						player.SendMessage(remainingPlayers);
+					}
+
 					// Check if there's only one player left, if so, they've won.
 					if (IPlayerList.Count == 1)
 					{
