@@ -53,7 +53,7 @@ namespace HuskyHoldemClient
 		{
 			Console.WriteLine(MENU_WELCOME);
 			MenuUtils.ShowColoredArt();
-			Console.WriteLine(MENU_PROMPT + MENU_REGISTER + MENU_EXIT);
+			Console.WriteLine(MENU_PROMPT + MENU_REGISTER + MENU_LEADERBOARD + MENU_EXIT);
 		}
 
 		public static void ShowRegisteredMenu(ClientPlayer player)
