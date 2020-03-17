@@ -253,6 +253,12 @@ namespace HuskyHoldemClient
 
 		private List<int> ShowGames()
 		{
+			if (Player == null)
+			{
+				Console.WriteLine("You are not registered");
+				return null;
+			}
+
 			string jsonRequest = JsonConvert.SerializeObject(new Packet(Command.SHOW_GAMES));
 			WritePacket(socket, jsonRequest);
 
