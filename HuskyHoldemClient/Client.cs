@@ -267,15 +267,15 @@ namespace HuskyHoldemClient
 			List<string> gamePlayerCount = JsonConvert.DeserializeObject<List<string>>(packet.DataToString()[1]);
 			Console.WriteLine("Games:");
 
-			if (gameList.Count == 0)
+			if (gameList == null || gameList.Count == 0)
 			{
 				Console.WriteLine("Sorry, no games exists at the moment.");
 				return null;
 			}
 
-			foreach (int gameId in gameList)
+			for (int i = 0; i < gameList.Count; i++)
 			{
-				Console.WriteLine($"Game ID: {gameId}\t{gamePlayerCount[gameId]} players");
+				Console.WriteLine($"Game ID: {gameList[i]}\t{gamePlayerCount[i]} players");
 			}
 
 			return gameList;
