@@ -51,12 +51,29 @@ namespace HuskyHoldemServer
 					{
 						lock (Server.gameList)
 						{
-							foreach (Game game in Server.gameList)
+							foreach (Game game in Server.gameList.ToList())
 							{
 								if (game.IPlayerList.Contains(player))
 								{
+									if (!game.InProgress)
+									{
+										// If the game is has not yet started, remove the player from IPlayerList since they disconnected
+										game.IPlayerList.Remove(player);
+									}
+									else
+									{
+										// Make sure they fold in the game
+										PacketQueue.Add(new Packet(Command.SEND_MOVE, false, new List<object>() { -1 }));
+									}
+									// Run the game's remove player collection logic
 									game.RemovePlayer(player);
-									PacketQueue.Add(new Packet(Command.SEND_MOVE, false, new List<object>() { -1 }));
+
+									// If they were the only one waiting for players, remove that game. 
+									if (game.IPlayerList.Count <= 0)
+									{
+										DebugUtils.WriteLine("Removing empty game.");
+										Server.gameList.Remove(game);
+									}
 								}
 							} 
 						}
