@@ -178,6 +178,12 @@ namespace HuskyHoldEm
 							playerIndex = playerIndex > IPlayerList.Count - 1 ? 0 : playerIndex;
 							currentPlayer = IPlayerList[playerIndex];
 						}
+						else
+						{
+							// Everyone folded.
+							GameFinished?.Invoke(this, currentPlayer);
+							return;
+						}
 
 						// Move on in the game
 						continue;
