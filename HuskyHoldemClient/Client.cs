@@ -94,9 +94,26 @@ namespace HuskyHoldemClient
 
 			foreach (string server in availableServers)
 			{
+				string[] serverSocket = server.Split(':');
+
+				string serverIP = serverSocket[0];
+
 				// Attempt to connect to the servers
 				DebugUtils.WriteLine($"[CLIENT] Connecting to {server}...");
-				tcpClient.ConnectAsync(server, port).Wait(1000);
+				
+				if (serverSocket.Count() == 1)
+				{
+					tcpClient.ConnectAsync(serverIP, port).Wait(1000);
+				}
+				else
+				{
+					int serverPort;
+					if (int.TryParse(serverSocket[1], out serverPort))
+					{
+						tcpClient.ConnectAsync(serverIP, serverPort).Wait(1000);
+					}
+				}
+
 				if (!tcpClient.Connected)
 				{
 					DebugUtils.WriteLine($"[CLIENT] Could not connect to server {server}...");
