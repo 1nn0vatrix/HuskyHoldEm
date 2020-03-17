@@ -486,7 +486,7 @@ namespace HuskyHoldemClient
 							Console.ReadKey(false);
 						}
 
-						Console.WriteLine($"{Player.Name}, you have {Player.Chips} chips...\nYour hand is:");
+						Console.WriteLine($"\n{Player.Name}, you have {Player.Chips} chips...\nYour hand is:");
 						Player.Hand.ShowHand();
 
 						bool isValidChoice = false;
@@ -494,7 +494,7 @@ namespace HuskyHoldemClient
 
 						while (!isValidChoice)
 						{
-							Console.WriteLine("\nSTAY, FOLD, or RAISE? \nTo RAISE type 'RAISE n' where n is the number you want to raise by.");
+							Console.WriteLine("\n\nSTAY, FOLD, or RAISE? \nTo RAISE type 'RAISE n' where n is the number you want to raise by.");
 							string input = Console.ReadLine().ToLower();
 
 							if (!String.IsNullOrEmpty(input))
@@ -588,7 +588,7 @@ namespace HuskyHoldemClient
 						// Only print the ranking if they finished the entire round and have five cards.
 						if (winnerCards.Count == 5)
 						{
-							Console.Write($"The winner is... {winnerName}! Their winning hand is ");
+							Console.Write($"\nThe winner is... {winnerName}! Their winning hand is ");
 							Hand winnerHand = new Hand(winnerCards);
 							winnerHand.PrintRanking();
 						}

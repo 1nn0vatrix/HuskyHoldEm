@@ -76,7 +76,9 @@ namespace HuskyHoldEm
 
 					string roundTitle = round < 3 ? $"Round {round + 1}" : "Final round";
 
-					player.SendMessage("\n" + roundTitle + "! Handing out cards...");
+					player.SendMessage("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
+					player.SendMessage(roundTitle + "! Handing out cards...");
+					player.SendMessage("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
 
 					// If the round is the starting round, be sure to collect their ante.
 					if (round == 0)
@@ -97,6 +99,8 @@ namespace HuskyHoldEm
 					}
 				}
 
+				ShowRemainingPlayers();
+
 				// Initialize the round's player loop variables
 				bool isRoundDone = false;
 				IPlayer maxBetter = null;
@@ -105,18 +109,6 @@ namespace HuskyHoldEm
 
 				while (!isRoundDone)
 				{
-					string remainingPlayers = "Remaining players: ";
-
-					foreach (IPlayer player in connectedPlayers)
-					{
-						remainingPlayers += player.Name + " ";
-					}
-
-					foreach (IPlayer player in connectedPlayers)
-					{
-						player.SendMessage(remainingPlayers);
-					}
-
 					// Check if there's only one player left, if so, they've won.
 					if (connectedPlayers.Count == 1)
 					{
@@ -150,10 +142,10 @@ namespace HuskyHoldEm
 					foreach (IPlayer player in connectedPlayers)
 					{
 						if (!player.Equals(currentPlayer))
-							player.SendMessage($"It's {currentPlayer.Name}'s turn now.");
+							player.SendMessage($"\n--> It's {currentPlayer.Name}'s turn now.");
 					}
 
-					string maxBetRound = $"The maximum bet for this round is currently {currentMaxBet} chips.";
+					string maxBetRound = $"\nThe maximum bet for this round is currently {currentMaxBet} chips.";
 					string absMaxBet = $"The maximum bet for the game is {absoluteMaximum} chips.";
 
 					currentPlayer.SendMessage($"{maxBetRound}\n{absMaxBet}");
@@ -189,7 +181,7 @@ namespace HuskyHoldEm
 						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
-								player.SendMessage($"{currentPlayer.Name} folded!");
+								player.SendMessage($"----> {currentPlayer.Name} folded!");
 						}
 
 						if (maxBetter != null && maxBetter.Equals(currentPlayer))
@@ -221,7 +213,7 @@ namespace HuskyHoldEm
 						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
-								player.SendMessage($"{currentPlayer.Name} stays.");
+								player.SendMessage($"----> {currentPlayer.Name} stays.");
 						}
 
 						// Player stays
@@ -233,7 +225,7 @@ namespace HuskyHoldEm
 						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
-								player.SendMessage($"{currentPlayer.Name} raises by {playerChoice} chips!");
+								player.SendMessage($"----> {currentPlayer.Name} raises by {playerChoice} chips!");
 						}
 
 						// Player raises
@@ -292,6 +284,22 @@ namespace HuskyHoldEm
 				nextPlayer = IPlayerList[currentIndex];
 			}
 			return nextPlayer;
+		}
+
+		// Show remaining players
+		private void ShowRemainingPlayers()
+		{
+			string remainingPlayers = "\nRemaining players: ";
+
+			foreach (IPlayer player in connectedPlayers)
+			{
+				remainingPlayers += player.Name + " ";
+			}
+
+			foreach (IPlayer player in connectedPlayers)
+			{
+				player.SendMessage(remainingPlayers);
+			}
 		}
 
 		public List<IPlayer> GetWinner()
