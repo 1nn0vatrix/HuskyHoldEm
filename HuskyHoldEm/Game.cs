@@ -16,6 +16,7 @@ namespace HuskyHoldEm
 
 		Dictionary<IPlayer, bool> playersStayed = new Dictionary<IPlayer, bool>();
 		Dictionary<IPlayer, int> playersCurrentPayments = new Dictionary<IPlayer, int>();
+		List<IPlayer> connectedPlayers = new List<IPlayer>();
 
 		public event Action<Game, IPlayer> GameFinished;
 
@@ -36,6 +37,7 @@ namespace HuskyHoldEm
 			{
 				playersStayed.Add(player, false);
 				playersCurrentPayments.Add(player, 0);
+				connectedPlayers.Add(player);
 				player.Hand.ClearHand();
 			}
 
@@ -47,8 +49,13 @@ namespace HuskyHoldEm
 		// Remove disconnected players from game logic collections
 		public void RemovePlayer(IPlayer player)
 		{
+			if (IPlayerList.IndexOf(player) != -1)
+			{
+				IPlayerList[IPlayerList.IndexOf(player)] = null;
+			}
 			playersStayed.Remove(player);
 			playersCurrentPayments.Remove(player);
+			connectedPlayers.Remove(player);
 		}
 
 		public void GameLoop()
@@ -61,7 +68,7 @@ namespace HuskyHoldEm
 				// Reset each player to not being stayed and their round's payments to zero.
 				// Check for the absolute maximum that can be bet.
 				// Give players cards
-				foreach (IPlayer player in IPlayerList)
+				foreach (IPlayer player in connectedPlayers)
 				{
 					// Reset which players have stayed and what they're paying for this round.
 					playersStayed[player] = false;
@@ -100,20 +107,20 @@ namespace HuskyHoldEm
 				{
 					string remainingPlayers = "Remaining players: ";
 
-					foreach (IPlayer player in IPlayerList)
+					foreach (IPlayer player in connectedPlayers)
 					{
 						remainingPlayers += player.Name + " ";
 					}
 
-					foreach (IPlayer player in IPlayerList)
+					foreach (IPlayer player in connectedPlayers)
 					{
 						player.SendMessage(remainingPlayers);
 					}
 
 					// Check if there's only one player left, if so, they've won.
-					if (IPlayerList.Count == 1)
+					if (connectedPlayers.Count == 1)
 					{
-						IPlayer lonelyWinner = IPlayerList.First();
+						IPlayer lonelyWinner = connectedPlayers.First();
 						lonelyWinner.AdjustChips(pot);
 						lonelyWinner.AnnounceWinner(lonelyWinner.Name, lonelyWinner.Hand, $"\n{lonelyWinner.Name}, everyone folded! You win {pot} chips, and now have {lonelyWinner.Chips} chips.");
 						GameFinished?.Invoke(this, lonelyWinner);
@@ -130,7 +137,7 @@ namespace HuskyHoldEm
 					// Makes sure to update the absolute maximum incase the lowest player bet more chips
 					// Reset it to maximum value, in case the lowest player folded and there can be a bigger absolute maximum
 					absoluteMaximum = int.MaxValue;
-					foreach (IPlayer player in IPlayerList)
+					foreach (IPlayer player in connectedPlayers)
 					{
 						if (player.Chips < absoluteMaximum)
 						{
@@ -138,9 +145,9 @@ namespace HuskyHoldEm
 						}
 					}
 
-					IPlayer currentPlayer = IPlayerList[playerIndex];
+					IPlayer currentPlayer = GetNextPlayer(ref playerIndex);
 
-					foreach (IPlayer player in IPlayerList)
+					foreach (IPlayer player in connectedPlayers)
 					{
 						if (!player.Equals(currentPlayer))
 							player.SendMessage($"It's {currentPlayer.Name}'s turn now.");
@@ -179,7 +186,7 @@ namespace HuskyHoldEm
 					if (playerChoice < 0)
 					{
 						// Player folds
-						foreach (IPlayer player in IPlayerList)
+						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
 								player.SendMessage($"{currentPlayer.Name} folded!");
@@ -189,15 +196,14 @@ namespace HuskyHoldEm
 						{
 							maxBetter = null;
 						}
-						playersStayed.Remove(currentPlayer);
-						playersCurrentPayments.Remove(currentPlayer);
-						IPlayerList.Remove(currentPlayer);
 
-						if (IPlayerList.Count() > 0)
+						RemovePlayer(currentPlayer);
+
+						if (connectedPlayers.Count() > 0)
 						{
 							// Update who the current player is
-							playerIndex = playerIndex > IPlayerList.Count - 1 ? 0 : playerIndex;
-							currentPlayer = IPlayerList[playerIndex];
+							playerIndex = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
+							currentPlayer = GetNextPlayer(ref playerIndex);
 						}
 						else
 						{
@@ -212,7 +218,7 @@ namespace HuskyHoldEm
 
 					if (playerChoice == 0)
 					{
-						foreach (IPlayer player in IPlayerList)
+						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
 								player.SendMessage($"{currentPlayer.Name} stays.");
@@ -224,7 +230,7 @@ namespace HuskyHoldEm
 
 					if (playerChoice > 0)
 					{
-						foreach (IPlayer player in IPlayerList)
+						foreach (IPlayer player in connectedPlayers)
 						{
 							if (!player.Equals(currentPlayer))
 								player.SendMessage($"{currentPlayer.Name} raises by {playerChoice} chips!");
@@ -236,7 +242,7 @@ namespace HuskyHoldEm
 						currentMaxBet += playerChoice;
 
 						// Reset the stayed players, they must all agree to stay again
-						foreach (IPlayer player in IPlayerList)
+						foreach (IPlayer player in connectedPlayers)
 						{
 							playersStayed[player] = false;
 						} 
@@ -249,15 +255,15 @@ namespace HuskyHoldEm
 					playersCurrentPayments[currentPlayer] += playerOwes;
 
 					// Update who the current player is
-					playerIndex  = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
-					currentPlayer = IPlayerList[playerIndex];
+					playerIndex = playerIndex >= IPlayerList.Count - 1 ? 0 : playerIndex + 1;
+					currentPlayer = GetNextPlayer(ref playerIndex);
 				}
 			}
 
 			// Display everyone's hands.
-			foreach (IPlayer player in IPlayerList)
+			foreach (IPlayer player in connectedPlayers)
 			{
-				player.ShowHands(IPlayerList);
+				player.ShowHands(connectedPlayers);
 			}
 
 			// Get the winner.
@@ -265,7 +271,7 @@ namespace HuskyHoldEm
 			IPlayer winner = GetWinner()[0];
 			winner.AdjustChips(pot);
 
-			foreach (IPlayer player in IPlayerList)
+			foreach (IPlayer player in connectedPlayers)
 			{
 				if (!player.Equals(winner))
 					player.AnnounceWinner(winner.Name, winner.Hand, $"\n{winner.Name} wins {pot} chips, they now have {winner.Chips} chips.");
@@ -276,15 +282,27 @@ namespace HuskyHoldEm
 			GameFinished?.Invoke(this, winner);
 		}		
 
+		// Circular player list logic
+		private IPlayer GetNextPlayer(ref int currentIndex)
+		{
+			IPlayer nextPlayer = IPlayerList[currentIndex];
+			while (nextPlayer == null)
+			{
+				currentIndex = currentIndex >= IPlayerList.Count - 1 ? 0 : currentIndex + 1;
+				nextPlayer = IPlayerList[currentIndex];
+			}
+			return nextPlayer;
+		}
+
 		public List<IPlayer> GetWinner()
 		{
-			if (IPlayerList?.Count == 0)
+			if (connectedPlayers?.Count == 0)
 			{
 				return null;
 			}
 
 			// Order the players by their hand rankings
-			List<IPlayer> OrderedPlayerList = IPlayerList.OrderByDescending(p => p.Hand).ToList();
+			List<IPlayer> OrderedPlayerList = connectedPlayers.OrderByDescending(p => p.Hand).ToList();
 
 			if (OrderedPlayerList[0].Hand.CompareTo(OrderedPlayerList[1].Hand) == 1)
 			{
