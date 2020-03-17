@@ -355,7 +355,15 @@ namespace HuskyHoldemClient
 			do
 			{
 				Console.Write("How many players would you like to join: ");
-				numberOfPlayers = int.Parse(Console.ReadLine().Trim());
+				try
+				{
+					numberOfPlayers = int.Parse(Console.ReadLine().Trim());
+				}
+				catch (FormatException)
+				{
+					Console.WriteLine("Invalid number of players, please select from 2-10");
+					continue;
+				}
 				if (numberOfPlayers <= 1 || numberOfPlayers > 10)
 				{
 					Console.WriteLine("Invalid number of players, please select from 2-10");
