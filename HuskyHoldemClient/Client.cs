@@ -288,7 +288,7 @@ namespace HuskyHoldemClient
 				Console.WriteLine("You are not registered");
 				return;
 			}
-			else if (Player.Chips <= 1)
+			else if (Player.Chips < 2)
 			{
 				Console.WriteLine("You don't have enough chips to play");
 				return;
@@ -303,18 +303,20 @@ namespace HuskyHoldemClient
 			int gameId;
 			do
 			{
-				Console.Write("Type in a open Game ID: ");
+				Console.Write("Type in an open Game ID: ");
 				try
 				{
 					gameId = int.Parse(Console.ReadLine().Trim());
 					if (!gameList.Contains(gameId))
 					{
-						Console.WriteLine("Invalid Game ID");
+						Console.WriteLine("Invalid Game ID.");
+						return;
 					}
 				}
 				catch (Exception)
 				{
-					continue;
+					Console.WriteLine("Invalid Game ID.");
+					return;
 				}
 
 				break;
@@ -325,15 +327,23 @@ namespace HuskyHoldemClient
 			WritePacket(socket, jsonRequest);
 
 			Packet packet = ReadPacket(socket);
-			DebugUtils.WriteLine($"[CLIENT] {(packet.Success ? "Successfully joined game" : "Error in joining game")}");
-
-			Console.WriteLine("Waiting for players...");
-			packet = ReadPacket(socket);
 
 			if (packet.Success)
 			{
-				Console.WriteLine("Starting game!");
-				GameLoop();
+				Console.WriteLine($"Joined game {gameId}");
+
+				Console.WriteLine("Waiting for players...");
+				packet = ReadPacket(socket);
+
+				if (packet.Success)
+				{
+					Console.WriteLine("Starting game!");
+					GameLoop();
+				}
+			}
+			else
+			{
+				Console.WriteLine($"Error in joining game {gameId}");
 			}
 
 		}
