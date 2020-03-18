@@ -236,11 +236,11 @@ namespace HuskyHoldemClient
 			if (packet.Success)
 			{
 				Player.Name = username;
-				DebugUtils.WriteLine("[CLIENT] Player name successfully changed");
+				Console.WriteLine("Player name successfully changed!");
 			}
 			else
 			{
-				DebugUtils.WriteLine("[CLIENT] Error in changing a user's username");
+				Console.WriteLine("Error in changing name.");
 			}
 		}
 
