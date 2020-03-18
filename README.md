@@ -5,5 +5,8 @@ ___
 ## Repository Description
 This repository is for the development of the CSS432 final project of a multiplayer networked game. It contains the documentation and source code required to build and run. CSS432 is an undergraduate network design course that covers computer networking infrastructure and the development of networked applications.
 ___
-## Documentation
+## About Our Game (Demo)
+[<img src="https://img.youtube.com/vi/mbcyzYeBPVk/maxresdefault.jpg" width="50%">](https://youtu.be/mbcyzYeBPVk)
+___
+## Project Documentation
 Documentation: https://drive.google.com/drive/u/0/folders/0ACw6HL1Aj9eKUk9PVA
