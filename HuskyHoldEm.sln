@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuskyHoldEm", "HuskyHoldEm\HuskyHoldEm.csproj", "{9B944B78-AD81-4BE5-B5B7-36E071D90821}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuskyHoldemServer", "HuskyHoldemServer\HuskyHoldemServer.csproj", "{CD6F76E2-F634-4EAB-AFDC-D4A41C03935B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuskyHoldemClient", "HuskyHoldemClient\HuskyHoldemClient.csproj", "{49223105-7558-4A53-B44E-77E4D71327B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B944B78-AD81-4BE5-B5B7-36E071D90821} = {9B944B78-AD81-4BE5-B5B7-36E071D90821}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
